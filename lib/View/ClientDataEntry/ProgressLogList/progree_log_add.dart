@@ -60,16 +60,16 @@ class _ProgressLogAddState extends State<ProgressLogAdd> {
   );
 
   List shiftLogElementQuestion = [
-    "Authorized Substance use Protocol, Adhere to",
-    "Behavioral/Emotional Issues",
-    "Chore Plan Followes",
+    "Authorized Substance use Protocol Adhered to",
+    "Behavioural/Emotional Issues",
+    "Chore Plan Followed",
     "Daily Planner Adhered To",
-    "Educatio- Has The Client Attende School Today",
-    "Excersice Planned Followed",
+    "Education- Has The Client Attended School Today?",
+    "Exercise Plan Followed",
     "Incident Log Completed",
     "Medication Administered As Prescribed",
-    "Menu/Diet Plann Followed",
-    "Personal Routine Care Followed",
+    "Menu/Diet Plan Followed",
+    "Personal Care Routine Followed",
     "PRN Administered",
     "Reinforcement Point Achieved",
     "Wake Up Routine Followed",
@@ -197,7 +197,6 @@ class _ProgressLogAddState extends State<ProgressLogAdd> {
                 _showQuestions == false
                     ? const SizedBox.shrink()
                     : SizedBox(
-                        height: 1300,
                         child: Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: ListView.builder(
@@ -312,35 +311,46 @@ class _ProgressLogAddState extends State<ProgressLogAdd> {
                 ? const SizedBox.shrink()
                 : Padding(
                     padding: const EdgeInsets.symmetric(vertical: 35.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AppButton.appButton("Save", onTap: () {
-                          if (widget.edit == true) {
-                            if (clientId == null) {
-                              showSnackBar(
-                                  context, "Please select ClientAgain");
-                            } else {
-                              updateProgressForm();
-                            }
-                          } else {
-                            saveProgressForm();
-                          }
-                        },
-                            textColor: AppTheme.whiteColor,
-                            backgroundColor: const Color(0xff00BFA5),
-                            height: 30,
-                            width: 110),
-                        const SizedBox(
-                          width: 15,
-                        ),
-                        AppButton.appButton("Cancel",
-                            textColor: AppTheme.whiteColor,
-                            backgroundColor: const Color(0xffF32184),
-                            height: 30,
-                            width: 110),
-                      ],
-                    ),
+                    child: _isLoading == true
+                        ? Center(
+                          child: CircularProgressIndicator(
+                              color: AppTheme.appColor,
+                            ),
+                        )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              AppButton.appButton("Save", onTap: () {
+                                if (widget.edit == true) {
+                                  if (clientId == null) {
+                                    showSnackBar(
+                                        context, "Please select Client Again");
+                                  } else {
+                                    updateProgressForm();
+                                  }
+                                } else {
+                                  if (clientId == null) {
+                                    showSnackBar(
+                                        context, "Please select Client");
+                                  } else {
+                                    saveProgressForm();
+                                  }
+                                }
+                              },
+                                  textColor: AppTheme.whiteColor,
+                                  backgroundColor: const Color(0xff00BFA5),
+                                  height: 30,
+                                  width: 110),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              AppButton.appButton("Cancel",
+                                  textColor: AppTheme.whiteColor,
+                                  backgroundColor: const Color(0xffF32184),
+                                  height: 30,
+                                  width: 110),
+                            ],
+                          ),
                   ),
           ],
         ),
@@ -375,7 +385,6 @@ class _ProgressLogAddState extends State<ProgressLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -547,7 +556,6 @@ class _ProgressLogAddState extends State<ProgressLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -782,7 +790,6 @@ class _ProgressLogAddState extends State<ProgressLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");

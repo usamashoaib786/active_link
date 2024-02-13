@@ -117,47 +117,54 @@ class _IncidentLogAddState extends State<IncidentLogAdd> {
             ? SizedBox.shrink()
             : Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AppButton.appButton("Save", onTap: () {
-                      if (widget.edit == true) {
-                        if (clientId == null) {
-                          showSnackBar(context, "Please select Client again");
-                        } else {
-                          updateIncidentForm();
-                        }
-                      } else {
-                        if (clientId != null &&
-                            staffId != null &&
-                            reportStaffId != null &&
-                            selectedSeverity != "Select Severity" &&
-                            selctedIncidentCategory !=
-                                "Select Incident Category" &&
-                            dateOccurred != null &&
-                            dateReported != null &&
-                            _timeOpenController.text.isNotEmpty &&
-                            _timeCloseControllerTwo.text.isNotEmpty) {
-                          saveIncidentForm();
-                        } else {
-                          showSnackBar(context, "Fill Complete Form");
-                        }
-                      }
-                    },
-                        textColor: AppTheme.whiteColor,
-                        backgroundColor: Color(0xff00BFA5),
-                        height: 30,
-                        width: 110),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    AppButton.appButton("Cancel",
-                        textColor: AppTheme.whiteColor,
-                        backgroundColor: Color(0xffF32184),
-                        height: 30,
-                        width: 110),
-                  ],
-                ),
+                child: _isLoading == true
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: AppTheme.appColor,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AppButton.appButton("Save", onTap: () {
+                            if (widget.edit == true) {
+                              if (clientId == null) {
+                                showSnackBar(
+                                    context, "Please select Client again");
+                              } else {
+                                updateIncidentForm();
+                              }
+                            } else {
+                              if (clientId != null &&
+                                  staffId != null &&
+                                  reportStaffId != null &&
+                                  selectedSeverity != "Select Severity" &&
+                                  selctedIncidentCategory !=
+                                      "Select Incident Category" &&
+                                  dateOccurred != null &&
+                                  dateReported != null &&
+                                  _timeOpenController.text.isNotEmpty &&
+                                  _timeCloseControllerTwo.text.isNotEmpty) {
+                                saveIncidentForm();
+                              } else {
+                                showSnackBar(context, "Fill Complete Form");
+                              }
+                            }
+                          },
+                              textColor: AppTheme.whiteColor,
+                              backgroundColor: Color(0xff00BFA5),
+                              height: 30,
+                              width: 110),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          AppButton.appButton("Cancel",
+                              textColor: AppTheme.whiteColor,
+                              backgroundColor: Color(0xffF32184),
+                              height: 30,
+                              width: 110),
+                        ],
+                      ),
               ),
         appBar: const CustomAppBar(
           title: "Incident Log Add",
@@ -638,7 +645,6 @@ class _IncidentLogAddState extends State<IncidentLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -716,7 +722,6 @@ class _IncidentLogAddState extends State<IncidentLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -779,7 +784,6 @@ class _IncidentLogAddState extends State<IncidentLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -874,7 +878,6 @@ class _IncidentLogAddState extends State<IncidentLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");

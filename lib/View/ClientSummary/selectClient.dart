@@ -84,7 +84,7 @@ class _selectedClientState extends State<selectedClient> {
                             child: Padding(
                               padding: const EdgeInsets.all(15.0),
                               child: AppText.appText(
-                                  "${apiClientresponse[index]["f_name"]} ${apiClientresponse[index]["f_name"]}"),
+                                  "${apiClientresponse[index]["f_name"]} ${apiClientresponse[index]["m_name"]} ${apiClientresponse[index]["f_name"]}"),
                             ),
                           ),
                         ),

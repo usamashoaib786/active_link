@@ -516,35 +516,46 @@ class _BehaviourLogAddState extends State<BehaviourLogAdd> {
                       )
                     : Padding(
                         padding: const EdgeInsets.symmetric(vertical: 35.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AppButton.appButton("Save", onTap: () {
-                              if (widget.edit == true) {
-                                if (clientId == null) {
-                                  showSnackBar(
-                                      context, "Please select Client again");
-                                } else {
-                                  updateBehaviourForm();
-                                }
-                              } else {
-                                saveBehaviourForm();
-                              }
-                            },
-                                textColor: AppTheme.whiteColor,
-                                backgroundColor: Color(0xff00BFA5),
-                                height: 30,
-                                width: 110),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            AppButton.appButton("Cancel",
-                                textColor: AppTheme.whiteColor,
-                                backgroundColor: Color(0xffF32184),
-                                height: 30,
-                                width: 110),
-                          ],
-                        ),
+                        child: _isLoading == true
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                  color: AppTheme.appColor,
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AppButton.appButton("Save", onTap: () {
+                                    if (widget.edit == true) {
+                                      if (clientId == null) {
+                                        showSnackBar(context,
+                                            "Please select Client again");
+                                      } else {
+                                        updateBehaviourForm();
+                                      }
+                                    } else {
+                                      if (clientId == null) {
+                                        showSnackBar(
+                                            context, "Please select Client");
+                                      } else {
+                                        saveBehaviourForm();
+                                      }
+                                    }
+                                  },
+                                      textColor: AppTheme.whiteColor,
+                                      backgroundColor: Color(0xff00BFA5),
+                                      height: 30,
+                                      width: 110),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  AppButton.appButton("Cancel",
+                                      textColor: AppTheme.whiteColor,
+                                      backgroundColor: Color(0xffF32184),
+                                      height: 30,
+                                      width: 110),
+                                ],
+                              ),
                       ),
           ],
         ),
@@ -838,7 +849,6 @@ class _BehaviourLogAddState extends State<BehaviourLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -901,7 +911,6 @@ class _BehaviourLogAddState extends State<BehaviourLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -1415,7 +1424,6 @@ class _BehaviourLogAddState extends State<BehaviourLogAdd> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
