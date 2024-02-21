@@ -7,10 +7,12 @@ import 'package:active_link/Utils/resources/res/app_theme.dart';
 import 'package:active_link/Utils/utils.dart';
 import 'package:active_link/Utils/widgets/others/app_text.dart';
 import 'package:active_link/View/Authentication/login_screen.dart';
+import 'package:active_link/View/ProfileScreen/compilence.dart';
 import 'package:active_link/config/app_urls.dart';
 import 'package:active_link/config/dio/app_dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -55,12 +57,6 @@ class _ClientSummaryState extends State<ClientSummary> {
   var documentResponse;
   late AppDio dio;
   AppLogger logger = AppLogger();
-  ReceivePort _receivePort = ReceivePort();
-  static downloadingCallback(id, status, progress) {
-    SendPort? sendPort = IsolateNameServer.lookupPortByName("Downloading");
-    sendPort!.send([id, status, progress]);
-  }
-
   String? selectedGender;
   List<String?> _answers = List.filled(7, null);
   List<String?> _goomingAnswers = List.filled(10, null);
@@ -283,21 +279,12 @@ class _ClientSummaryState extends State<ClientSummary> {
     "None",
     "other"
   ];
-  int _progress = 0;
+  double _progress = 0.0;
 
   @override
   void initState() {
     dio = AppDio(context);
     logger.init();
-    IsolateNameServer.registerPortWithName(
-        _receivePort.sendPort, "Downloading");
-    _receivePort.listen((message) {
-      setState(() {
-        _progress = message[2];
-      });
-      print(_progress);
-    });
-    FlutterDownloader.registerCallback(downloadingCallback);
     getClientSummary();
     super.initState();
   }
@@ -2667,27 +2654,46 @@ class _ClientSummaryState extends State<ClientSummary> {
                       fontWeight: FontWeight.w400,
                       textColor: AppTheme.blackColor),
                   actionContainer(
-                     onTap: () async {
-                                            final status = await Permission
-                                                  .storage
-                                                  .request();
-                                              if (status.isGranted) {
-                                                final externalDir =
-                                                    await getExternalStorageDirectory();
-                                                FlutterDownloader.enqueue(
-                                                  url:
-                                                      "https://portaltest.thebrandwings.com/upload/${data["doc_client_id"]}/${data["document_file"]}",
-                                                  savedDir: externalDir!.path,
-                                                  fileName: "Download",
-                                                  showNotification: true,
-                                                  openFileFromNotification:
-                                                      true,
-                                                );
-                                              } else {
-                                                print("Permission Denied");
-                                              }
-                                            },
-                      icon:  _progress > 0?CircularProgressIndicator():  Icons.download,
+                      onTap: () async {
+                        final status = await Permission.storage.request();
+                        if (status.isGranted) {
+                          final externalDir =
+                              await getExternalStorageDirectory();
+                          FileDownloader.downloadFile(
+                            url:
+                                "https://portaltest.thebrandwings.com/upload/${data["doc_client_id"]}/${data["document_file"]}",
+                            notificationType: NotificationType.all,
+                            onProgress: (fileName, progress) {
+                              setState(() {
+                                _progress = progress;
+                              });
+                            },
+                            onDownloadCompleted: (path) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return const DownloadSuccessPopup(
+                                    msg1: "Successfully",
+                                  );
+                                },
+                              );
+                            },
+                            onDownloadError: (errorMessage) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return const DownloadSuccessPopup(
+                                    msg1: "Failed",
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        } else {
+                          print("Permission Denied");
+                        }
+                      },
+                      icon: Icons.download,
                       color: const Color(0xff1A0B8F))
                 ],
               )

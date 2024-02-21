@@ -1,8 +1,8 @@
-import 'dart:isolate';
-import 'dart:ui';
+import 'dart:async';
 import 'package:active_link/Constants/app_logger.dart';
 import 'package:active_link/Utils/custom_appbar.dart';
 import 'package:active_link/Utils/resources/res/app_theme.dart';
+import 'package:active_link/Utils/utils.dart';
 import 'package:active_link/Utils/widgets/others/app_button.dart';
 import 'package:active_link/Utils/widgets/others/app_text.dart';
 import 'package:active_link/config/app_urls.dart';
@@ -10,7 +10,7 @@ import 'package:active_link/config/dio/app_dio.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_document_picker/flutter_document_picker.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -25,12 +25,8 @@ class CompilanceScreen extends StatefulWidget {
 class _CompilanceScreenState extends State<CompilanceScreen> {
   List expireDate = [];
   List specified = [];
-  ReceivePort _receivePort = ReceivePort();
-  int _progress = 0;
-  static downloadingCallback(id, status, progress) {
-    SendPort? sendPort = IsolateNameServer.lookupPortByName("Downloading");
-    sendPort!.send([id, status, progress]);
-  }
+  bool _isLoading = false;
+  double _progress = 0.0;
 
   AppLogger logger = AppLogger();
   late AppDio dio;
@@ -47,16 +43,7 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
   void initState() {
     dio = AppDio(context);
     logger.init();
-    IsolateNameServer.registerPortWithName(
-        _receivePort.sendPort, "Downloading");
-    _receivePort.listen((message) {
-      setState(() {
-        _progress = message[2];
-      });
-      print(_progress);
-    });
-
-    FlutterDownloader.registerCallback(downloadingCallback);
+    super.initState();
     specified = [
       "${widget.data["signature"]}",
       "${widget.data["driving_licence"]}",
@@ -71,8 +58,6 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
       "${widget.data["walking_with_children_exp_date"]}",
       "N/A"
     ];
-
-    super.initState();
   }
 
   Future<void> pickDocument({required int index}) async {
@@ -109,7 +94,7 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
             child: Column(
               children: [
                 ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: 5,
                   itemBuilder: (context, index) {
@@ -153,39 +138,68 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
                                                 fontWeight: FontWeight.w400,
                                                 textColor: AppTheme.blackColor),
                                             AppButton.appButton(
-                                                specified[index] == ""
-                                                    ? "Not Specified"
-                                                    : "Download",
-                                                onTap: () async {
-                                              if (specified[index] != "") {
-                                                final status = await Permission
-                                                    .storage
-                                                    .request();
-                                                if (status.isGranted) {
-                                                  final externalDir =
-                                                      await getExternalStorageDirectory();
-                                                  FlutterDownloader.enqueue(
-                                                    url:
-                                                        "https://portaltest.thebrandwings.com/${widget.data["upload_path"]}${specified[index]}",
-                                                    savedDir: externalDir!.path,
-                                                    fileName: "Download",
-                                                    showNotification: true,
-                                                    openFileFromNotification:
-                                                        true,
-                                                  );
-                                                } else {
-                                                  print("Permission Denied");
+                                              specified[index] == ""
+                                                  ? "Not Specified"
+                                                  : "Download",
+                                              onTap: () async {
+                                                if (specified[index] != "") {
+                                                  final status =
+                                                      await Permission.storage
+                                                          .request();
+                                                  if (status.isGranted) {
+                                                    final externalDir =
+                                                        await getExternalStorageDirectory();
+
+                                                    FileDownloader.downloadFile(
+                                                      url:
+                                                          "https://portaltest.thebrandwings.com/${widget.data["upload_path"]}${specified[index]}",
+                                                      notificationType:
+                                                          NotificationType.all,
+                                                      onProgress:
+                                                          (fileName, progress) {
+                                                        setState(() {
+                                                          _progress = progress;
+                                                        });
+                                                      },
+                                                      onDownloadCompleted:
+                                                          (path) {
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return const DownloadSuccessPopup(
+                                                              msg1:
+                                                                  "Successfully",
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                      onDownloadError: (errorMessage) {
+                                                          showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return const DownloadSuccessPopup(
+                                                              msg1:
+                                                                  "Failed",
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    );
+                                                  } else {
+                                                    print("Permission Denied");
+                                                  }
                                                 }
-                                              }
-                                            },
-                                                height: 22,
-                                                width: 120,
-                                                textColor: AppTheme.whiteColor,
-                                                backgroundColor:
-                                                    specified[index] != ""
-                                                        ? Colors.blue
-                                                        : const Color(
-                                                            0xFFFF0D0D))
+                                              },
+                                              height: 22,
+                                              width: 120,
+                                              textColor: AppTheme.whiteColor,
+                                              backgroundColor:
+                                                  specified[index] != ""
+                                                      ? Colors.blue
+                                                      : const Color(0xFFFF0D0D),
+                                            )
                                           ],
                                         ),
                                         Row(
@@ -211,22 +225,24 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
                                           ],
                                         ),
                                         _pickedFilePaths[index] == null
-                                            ? SizedBox.shrink()
+                                            ? const SizedBox.shrink()
                                             : AppText.appText(
-                                                "${_pickedFilePaths[index]!}")
+                                                "${_pickedFilePaths[index]}")
                                       ],
                                     ),
                                   )))),
                     );
                   },
                 ),
-                AppButton.appButton("Update", onTap: () {
-                  uploadFile();
-                },
-                    textColor: AppTheme.whiteColor,
-                    backgroundColor: const Color(0xff00BFA5),
-                    height: 30,
-                    width: 100)
+                _isLoading == true
+                    ? const Center(child: CircularProgressIndicator())
+                    : AppButton.appButton("Update", onTap: () {
+                        uploadFile();
+                      },
+                        textColor: AppTheme.whiteColor,
+                        backgroundColor: const Color(0xff00BFA5),
+                        height: 30,
+                        width: 100)
               ],
             ),
           ),
@@ -250,47 +266,109 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
   }
 
   Future<void> uploadFile() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
-      String fileName1 = _pickedFilePaths[0]!.split('/').last;
-      String fileName2 = _pickedFilePaths[1]!.split('/').last;
-      String fileName3 = _pickedFilePaths[2]!.split('/').last;
-      String fileName4 = _pickedFilePaths[3]!.split('/').last;
-      String fileName5 = _pickedFilePaths[4]!.split('/').last;
+      List<MultipartFile> files = [];
+      List<String> keys = [];
 
-      FormData formData = FormData.fromMap({
-        'signature': await MultipartFile.fromFile(
-          _pickedFilePaths[0]!,
-          filename: fileName1,
-        ),
-        'driving_licence': await MultipartFile.fromFile(
-          _pickedFilePaths[1]!,
-          filename: fileName2,
-        ),
-        'first_aid': await MultipartFile.fromFile(
-          _pickedFilePaths[2]!,
-          filename: fileName3,
-        ),
-        'walking_with_children': await MultipartFile.fromFile(
-          _pickedFilePaths[3]!,
-          filename: fileName4,
-        ),
-        'other_documents': await MultipartFile.fromFile(
-          _pickedFilePaths[4]!,
-          filename: fileName5,
-        ),
-        "upload_path": widget.data["upload_path"]
-      });
+      for (int i = 0; i < _pickedFilePaths.length; i++) {
+        if (_pickedFilePaths[i] != null) {
+          String fileName = _pickedFilePaths[i]!.split('/').last;
+          String key =
+              getKeyForIndex(i); // Define a method to get key for index i
+          keys.add(key);
+          files.add(await MultipartFile.fromFile(
+            _pickedFilePaths[i]!,
+            filename: fileName,
+          ));
+        }
+      }
 
-      Response response =
-          await dio.post(path: AppUrls.uploadDocument, data: formData);
+      FormData formData = FormData.fromMap(Map.fromEntries(List.generate(
+          keys.length, (index) => MapEntry(keys[index], files[index]))));
+      formData.fields.add(MapEntry("upload_path", widget.data["upload_path"]));
+
+      Response response = await dio.post(
+        path: AppUrls.uploadDocument,
+        data: formData,
+      );
 
       if (response.statusCode == 200) {
-        print('File uploaded successfully');
+        showSnackBar(context, "${response.data["message"]}");
+        setState(() {
+          _isLoading = false;
+          _pickedFilePaths = List.generate(5, (index) => null);
+        });
       } else {
-        print('Failed to upload file. Status code: ${response.statusCode}');
+        showSnackBar(context, "${response.data["message"]}");
+        setState(() {
+          _isLoading = false;
+        });
       }
     } catch (error) {
-      print('Error uploading file: $error');
+      showSnackBar(context, "${error}");
+      setState(() {
+        _isLoading = false;
+      });
     }
+  }
+
+  String getKeyForIndex(int index) {
+    switch (index) {
+      case 0:
+        return 'signature';
+      case 1:
+        return 'driving_licence';
+      case 2:
+        return 'first_aid';
+      case 3:
+        return 'walking_with_children';
+      case 4:
+        return 'other_documents';
+      default:
+        throw Exception('Invalid index');
+    }
+  }
+}
+
+class DownloadSuccessPopup extends StatefulWidget {
+  final msg1;
+
+  const DownloadSuccessPopup({super.key, required this.msg1});
+
+  @override
+  State<DownloadSuccessPopup> createState() => _DownloadSuccessPopupState();
+}
+
+class _DownloadSuccessPopupState extends State<DownloadSuccessPopup> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppTheme.appColor,
+      title: AppText.appText('Download ${widget.msg1}',
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          textColor: AppTheme.whiteColor),
+      actions: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppButton.appButton(
+              "Ok",
+              borderColor: AppTheme.whiteColor,
+              textColor: AppTheme.whiteColor,
+              height: 40,
+              radius: 1,
+              width: 70,
+              onTap: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        ),
+      ],
+    );
   }
 }

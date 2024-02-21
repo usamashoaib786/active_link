@@ -1,17 +1,18 @@
 import 'dart:isolate';
 import 'dart:ui';
 
-
 import 'package:active_link/Constants/app_logger.dart';
 import 'package:active_link/Utils/custom_appbar.dart';
 import 'package:active_link/Utils/resources/res/app_theme.dart';
 import 'package:active_link/Utils/utils.dart';
 import 'package:active_link/Utils/widgets/others/app_text.dart';
 import 'package:active_link/View/Authentication/login_screen.dart';
+import 'package:active_link/View/ProfileScreen/compilence.dart';
 import 'package:active_link/config/app_urls.dart';
 import 'package:active_link/config/dio/app_dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -28,26 +29,12 @@ class _InnerDocumentListState extends State<InnerDocumentList> {
   AppLogger logger = AppLogger();
   bool _isLoading = false;
   var finalResponse;
-  int _progress = 0;
-  ReceivePort _receivePort = ReceivePort();
-  static downloadingCallback(id, status, progress) {
-    SendPort? sendPort = IsolateNameServer.lookupPortByName("Downloading");
-    sendPort!.send([id, status, progress]);
-  }
+  double _progress = 0.0;
 
   @override
   void initState() {
     dio = AppDio(context);
     logger.init();
-    IsolateNameServer.registerPortWithName(
-        _receivePort.sendPort, "Downloading");
-    _receivePort.listen((message) {
-      setState(() {
-        _progress = message[2];
-      });
-      print(_progress);
-    });
-    FlutterDownloader.registerCallback(downloadingCallback);
     adminDocument();
     super.initState();
   }
@@ -112,25 +99,55 @@ class _InnerDocumentListState extends State<InnerDocumentList> {
                                               if (status.isGranted) {
                                                 final externalDir =
                                                     await getExternalStorageDirectory();
-                                                FlutterDownloader.enqueue(
+                                                FileDownloader.downloadFile(
                                                   url:
                                                       "https://portaltest.thebrandwings.com/upload/admin_doc/${finalResponse[index]["document"]}",
-                                                  savedDir: externalDir!.path,
-                                                  fileName: "Download",
-                                                  showNotification: true,
-                                                  openFileFromNotification:
-                                                      true,
+                                                  notificationType:
+                                                      NotificationType.all,
+                                                  onProgress:
+                                                      (fileName, progress) {
+                                                    setState(() {
+                                                      _progress = progress;
+                                                    });
+                                                  },
+                                                  onDownloadCompleted: (path) {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return const DownloadSuccessPopup(
+                                                          msg1: "Successfully",
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  onDownloadError:
+                                                      (errorMessage) {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return const DownloadSuccessPopup(
+                                                          msg1: "Failed",
+                                                        );
+                                                      },
+                                                    );
+                                                  },
                                                 );
                                               } else {
                                                 print("Permission Denied");
                                               }
                                             },
-                                            child: Container(
-                                              height: 25,
-                                              width: 25,
-                                              child: Image.asset(
-                                                  "assets/images/image 36.png"),
-                                            ),
+                                            child: _progress > 0
+                                                ? CircularProgressIndicator(
+                                                    color: AppTheme.appColor,
+                                                  )
+                                                : Container(
+                                                    height: 25,
+                                                    width: 25,
+                                                    child: Image.asset(
+                                                        "assets/images/image 36.png"),
+                                                  ),
                                           )
                                         ],
                                       ),
@@ -164,7 +181,6 @@ class _InnerDocumentListState extends State<InnerDocumentList> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");

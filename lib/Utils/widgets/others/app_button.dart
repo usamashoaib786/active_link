@@ -1,28 +1,29 @@
-
 import 'package:active_link/Utils/resources/res/app_theme.dart';
 import 'package:active_link/Utils/widgets/others/app_text.dart';
 import 'package:flutter/material.dart';
 
 class AppButton {
-  static Widget appButton(String text,
-      {double? height,
-      double? width,
-      Color? backgroundColor,
-      EdgeInsetsGeometry? padding,
-      TextAlign? textAlign,
-      Color? textColor,
-      double? fontSize,
-      GestureTapCallback? onTap,
-      FontWeight? fontWeight,
-      FontStyle? fontStyle,
-      TextBaseline? textBaseline,
-      TextOverflow? overflow,
-      double? letterSpacing,
-      bool underLine = false,
-      bool fontFamily = false,
-      double? radius,
-      bool? border,
-      Color? borderColor,}) {
+  static Widget appButton(
+    String text, {
+    double? height,
+    double? width,
+    Color? backgroundColor,
+    EdgeInsetsGeometry? padding,
+    TextAlign? textAlign,
+    Color? textColor,
+    double? fontSize,
+    GestureTapCallback? onTap,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    TextBaseline? textBaseline,
+    TextOverflow? overflow,
+    double? letterSpacing,
+    bool underLine = false,
+    bool fontFamily = false,
+    double? radius,
+    bool? border,
+    borderColor,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -33,7 +34,10 @@ class AppButton {
         decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(20),
-         ),
+            border: Border.all(
+              color: borderColor == null ? Colors.transparent : borderColor,
+              width: 2,
+            )),
         child: AppText.appText(text,
             fontFamily: fontFamily,
             fontSize: fontSize,
@@ -72,7 +76,6 @@ class AppButton {
       onTap: onTap,
       child: Container(
         padding: padding,
-        
         height: height,
         decoration: BoxDecoration(
             color: backgroundColor,
@@ -173,4 +176,3 @@ class AppButton {
     );
   }
 }
- 

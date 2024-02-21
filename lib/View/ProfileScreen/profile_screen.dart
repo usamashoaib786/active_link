@@ -277,6 +277,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       backgroundColor: const Color(0xff00BFA5),
                       height: 30,
                       width: 110),
+                      
                   const SizedBox(
                     width: 10,
                   ),
