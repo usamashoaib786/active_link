@@ -188,7 +188,7 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
                                                       },
                                                     );
                                                   } else {
-                                                    print("Permission Denied");
+                                                   showSnackBar(context, "Please enable gallery permission");
                                                   }
                                                 }
                                               },

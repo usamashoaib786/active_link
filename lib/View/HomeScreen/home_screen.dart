@@ -72,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
     dio = AppDio(context);
     logger.init();
     homePageApi();
-    getNotification();
     super.initState();
   }
 
@@ -203,11 +202,10 @@ class _MyHomePageState extends State<MyHomePage> {
           _isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -263,11 +261,10 @@ class _MyHomePageState extends State<MyHomePage> {
           _isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -288,6 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return;
         } else {
           setState(() {
+            getNotification();
             _isLoading = false;
             finalResponse = responseData;
           });
@@ -467,11 +465,10 @@ class _MyHomePageState extends State<MyHomePage> {
           _isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -890,11 +887,10 @@ class _MyDrawerState extends State<MyDrawer> {
           _isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");

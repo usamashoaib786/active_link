@@ -135,7 +135,8 @@ class _InnerDocumentListState extends State<InnerDocumentList> {
                                                   },
                                                 );
                                               } else {
-                                                print("Permission Denied");
+                                                showSnackBar(context,
+                                                    "Please enable gallery permission");
                                               }
                                             },
                                             child: _progress > 0

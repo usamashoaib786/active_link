@@ -70,7 +70,7 @@ class _AdminDocumentScreenState extends State<AdminDocumentScreen> {
           _isLoading = false;
         });
       } else if (response.statusCode == responseCode401) {
-        showSnackBar(context, "${responseData["message"]}");
+        showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());

@@ -2690,7 +2690,8 @@ class _ClientSummaryState extends State<ClientSummary> {
                             },
                           );
                         } else {
-                          print("Permission Denied");
+                          showSnackBar(
+                              context, "Please enable gallery permission");
                         }
                       },
                       icon: Icons.download,
