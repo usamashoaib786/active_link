@@ -93,62 +93,48 @@ class _InnerDocumentListState extends State<InnerDocumentList> {
                                               textColor: AppTheme.blackColor),
                                           GestureDetector(
                                             onTap: () async {
-                                              final status = await Permission
-                                                  .storage
-                                                  .request();
-                                              if (status.isGranted) {
-                                                final externalDir =
-                                                    await getExternalStorageDirectory();
-                                                FileDownloader.downloadFile(
-                                                  url:
-                                                      "https://portaltest.thebrandwings.com/upload/admin_doc/${finalResponse[index]["document"]}",
-                                                  notificationType:
-                                                      NotificationType.all,
-                                                  onProgress:
-                                                      (fileName, progress) {
-                                                    setState(() {
-                                                      _progress = progress;
-                                                    });
-                                                  },
-                                                  onDownloadCompleted: (path) {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return const DownloadSuccessPopup(
-                                                          msg1: "Successfully",
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  onDownloadError:
-                                                      (errorMessage) {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return const DownloadSuccessPopup(
-                                                          msg1: "Failed",
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                );
-                                              } else {
-                                                showSnackBar(context,
-                                                    "Please enable gallery permission");
-                                              }
+                                              FileDownloader.downloadFile(
+                                                url:
+                                                    "https://portaltest.thebrandwings.com/upload/admin_doc/${finalResponse[index]["document"]}",
+                                                notificationType:
+                                                    NotificationType.all,
+                                                onProgress:
+                                                    (fileName, progress) {
+                                                  setState(() {
+                                                    _progress = progress;
+                                                  });
+                                                },
+                                                onDownloadCompleted: (path) {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return const DownloadSuccessPopup(
+                                                        msg1: "Successfully",
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                onDownloadError:
+                                                    (errorMessage) {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return const DownloadSuccessPopup(
+                                                        msg1: "Failed",
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              );
                                             },
-                                            child: _progress > 0
-                                                ? CircularProgressIndicator(
-                                                    color: AppTheme.appColor,
-                                                  )
-                                                : Container(
-                                                    height: 25,
-                                                    width: 25,
-                                                    child: Image.asset(
-                                                        "assets/images/image 36.png"),
-                                                  ),
+                                            child: SizedBox(
+                                              height: 25,
+                                              width: 25,
+                                              child: Image.asset(
+                                                  "assets/images/image 36.png"),
+                                            ),
                                           )
                                         ],
                                       ),

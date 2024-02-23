@@ -143,14 +143,7 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
                                                   : "Download",
                                               onTap: () async {
                                                 if (specified[index] != "") {
-                                                  final status =
-                                                      await Permission.storage
-                                                          .request();
-                                                  if (status.isGranted) {
-                                                    final externalDir =
-                                                        await getExternalStorageDirectory();
-
-                                                    FileDownloader.downloadFile(
+                                                     FileDownloader.downloadFile(
                                                       url:
                                                           "https://portaltest.thebrandwings.com/${widget.data["upload_path"]}${specified[index]}",
                                                       notificationType:
@@ -187,9 +180,18 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
                                                         );
                                                       },
                                                     );
-                                                  } else {
-                                                   showSnackBar(context, "Please enable gallery permission");
-                                                  }
+                                               
+                                                //   final status =
+                                                //       await Permission.storage
+                                                //           .request();
+                                                //           print("objectbj$status");
+                                                //   if (status.isGranted) {
+                                                //     final externalDir =
+                                                //         await getExternalStorageDirectory();
+
+                                                //     } else {
+                                                //    showSnackBar(context, "Please enable gallery permission");
+                                                //   }
                                                 }
                                               },
                                               height: 22,

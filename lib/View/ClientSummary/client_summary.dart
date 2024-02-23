@@ -2655,44 +2655,36 @@ class _ClientSummaryState extends State<ClientSummary> {
                       textColor: AppTheme.blackColor),
                   actionContainer(
                       onTap: () async {
-                        final status = await Permission.storage.request();
-                        if (status.isGranted) {
-                          final externalDir =
-                              await getExternalStorageDirectory();
-                          FileDownloader.downloadFile(
-                            url:
-                                "https://portaltest.thebrandwings.com/upload/${data["doc_client_id"]}/${data["document_file"]}",
-                            notificationType: NotificationType.all,
-                            onProgress: (fileName, progress) {
-                              setState(() {
-                                _progress = progress;
-                              });
-                            },
-                            onDownloadCompleted: (path) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return const DownloadSuccessPopup(
-                                    msg1: "Successfully",
-                                  );
-                                },
-                              );
-                            },
-                            onDownloadError: (errorMessage) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return const DownloadSuccessPopup(
-                                    msg1: "Failed",
-                                  );
-                                },
-                              );
-                            },
-                          );
-                        } else {
-                          showSnackBar(
-                              context, "Please enable gallery permission");
-                        }
+                        FileDownloader.downloadFile(
+                          url:
+                              "https://portaltest.thebrandwings.com/upload/${data["doc_client_id"]}/${data["document_file"]}",
+                          notificationType: NotificationType.all,
+                          onProgress: (fileName, progress) {
+                            setState(() {
+                              _progress = progress;
+                            });
+                          },
+                          onDownloadCompleted: (path) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const DownloadSuccessPopup(
+                                  msg1: "Successfully",
+                                );
+                              },
+                            );
+                          },
+                          onDownloadError: (errorMessage) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const DownloadSuccessPopup(
+                                  msg1: "Failed",
+                                );
+                              },
+                            );
+                          },
+                        );
                       },
                       icon: Icons.download,
                       color: const Color(0xff1A0B8F))

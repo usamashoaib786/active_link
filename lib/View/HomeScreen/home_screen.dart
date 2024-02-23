@@ -20,6 +20,7 @@ import 'package:active_link/View/TaskManagement/task_list.dart';
 import 'package:active_link/View/ToDoNotes/to_do_notes.dart';
 import 'package:active_link/config/dio/app_dio.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -62,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const MyHomePage(),
     const ProfileScreen(),
   ];
-
+  PermissionStatus? _permissionStatus;
   late AppDio dio;
   AppLogger logger = AppLogger();
   var notificationResponse;
