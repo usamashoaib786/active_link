@@ -116,22 +116,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       ],
                     ),
                     Spacer(),
-                    // Container(
-                    //   width: 25,
-                    //   height: 25,
-                    //   decoration: const ShapeDecoration(
-                    //     color: Color(0xFFD9D9D9),
-                    //     shape: OvalBorder(),
-                    //   ),
-                    //   child: Center(
-                    //     child: AppText.appText(
-                    //       "15",
-                    //       textColor: Colors.black,
-                    //       fontSize: 12,
-                    //       fontWeight: FontWeight.w400,
-                    //     ),
-                    //   ),
-                    // )
                   ]),
                 ),
               ),
@@ -224,23 +208,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 )
               ],
             ),
-            // Spacer(),
-            // Container(
-            //   width: 25,
-            //   height: 25,
-            //   decoration: const ShapeDecoration(
-            //     color: Color(0xFFD9D9D9),
-            //     shape: OvalBorder(),
-            //   ),
-            //   child: Center(
-            //     child: AppText.appText(
-            //       "15",
-            //       textColor: Colors.black,
-            //       fontSize: 12,
-            //       fontWeight: FontWeight.w400,
-            //     ),
-            //   ),
-            // )
           ]),
         ),
       ),

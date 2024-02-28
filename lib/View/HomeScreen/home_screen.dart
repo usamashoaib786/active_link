@@ -44,11 +44,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var finalResponse;
   final List img = [
-    "assets/images/image 11.png",
-    "assets/images/image 16.png",
-    "assets/images/image5.png",
-    "assets/images/image3.png",
-    "assets/images/image4.png",
+    "assets/images/My Shifts (2).png",
+    "assets/images/Completed Shifts.png",
+    "assets/images/Behaviour Registered.png",
+    "assets/images/Apply Leave.png",
+    "assets/images/Progress Log.png",
   ];
 
   final List txt = [
@@ -646,7 +646,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   leading: SizedBox(
                       height: 30,
                       width: 30,
-                      child: Image.asset("assets/images/shift.png")),
+                      child: Image.asset("assets/images/Shift Details.png")),
                   title: AppText.appText('Shift Details',
                       fontSize: 14, fontWeight: FontWeight.w400),
                 ),
@@ -654,7 +654,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   leading: SizedBox(
                       height: 30,
                       width: 30,
-                      child: Image.asset("assets/images/document.png")),
+                      child: Image.asset("assets/images/Admin Documents.png")),
                   title: AppText.appText('Admin Documents',
                       fontSize: 14, fontWeight: FontWeight.w400),
                   onTap: () {
@@ -665,7 +665,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   leading: SizedBox(
                       height: 30,
                       width: 30,
-                      child: Image.asset("assets/images/Tasks.png")),
+                      child: Image.asset("assets/images/Task Management.png")),
                   title: AppText.appText('Task Management',
                       fontSize: 14, fontWeight: FontWeight.w400),
                   onTap: () {
@@ -715,7 +715,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   leading: SizedBox(
                       height: 30,
                       width: 30,
-                      child: Image.asset("assets/images/todo.png")),
+                      child: Image.asset("assets/images/To Do Notes.png")),
                   title: AppText.appText('To Do Notes',
                       fontSize: 14, fontWeight: FontWeight.w400),
                   onTap: () {
@@ -731,7 +731,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   leading: SizedBox(
                       height: 30,
                       width: 30,
-                      child: Image.asset("assets/images/Leave.png")),
+                      child: Image.asset("assets/images/Leave Apply.png")),
                   title: AppText.appText('Leave Managements',
                       fontSize: 14, fontWeight: FontWeight.w400),
                   onTap: () {
@@ -781,7 +781,8 @@ class _MyDrawerState extends State<MyDrawer> {
                   leading: SizedBox(
                       height: 30,
                       width: 30,
-                      child: Image.asset("assets/images/Leave.png")),
+                      child:
+                          Image.asset("assets/images/Client Data Entry.png")),
                   title: AppText.appText('Client data Entry',
                       fontSize: 14, fontWeight: FontWeight.w400),
                   onTap: () {
@@ -844,7 +845,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   leading: SizedBox(
                       height: 30,
                       width: 30,
-                      child: Image.asset("assets/images/todo.png")),
+                      child: Image.asset("assets/images/Client Summary.png")),
                   title: AppText.appText('Client Summary',
                       fontSize: 14, fontWeight: FontWeight.w400),
                   onTap: () {
@@ -855,7 +856,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   leading: SizedBox(
                       height: 30,
                       width: 30,
-                      child: Image.asset("assets/images/logout.png")),
+                      child: Image.asset("assets/images/Log Out.png")),
                   title: AppText.appText('Logout',
                       fontSize: 14, fontWeight: FontWeight.w400),
                   onTap: () {

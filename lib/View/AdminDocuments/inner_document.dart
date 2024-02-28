@@ -87,7 +87,7 @@ class _InnerDocumentListState extends State<InnerDocumentList> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          AppText.appText("View Documents",
+                                          AppText.appText("Download Document",
                                               fontSize: 14,
                                               fontWeight: FontWeight.w400,
                                               textColor: AppTheme.blackColor),
@@ -133,7 +133,7 @@ class _InnerDocumentListState extends State<InnerDocumentList> {
                                               height: 25,
                                               width: 25,
                                               child: Image.asset(
-                                                  "assets/images/image 36.png"),
+                                                  "assets/images/Download & Upload Documents Icon.png"),
                                             ),
                                           )
                                         ],

@@ -252,11 +252,11 @@ class _LeaveRequestFormState extends State<LeaveRequestForm> {
               const SizedBox(
                 height: 40,
               ),
-              CustomTextField(
-                controller: _descController,
-                hintText: "Enter the Description",
-                lines: 6,
-              ),
+                CustomTextField(
+                  controller: _descController,
+                  hintText: "Enter the Description",
+                  lines: 6,
+                ),
               const SizedBox(
                 height: 40,
               ),

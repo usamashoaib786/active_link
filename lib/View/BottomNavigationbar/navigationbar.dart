@@ -1,4 +1,3 @@
-
 import 'package:active_link/Utils/resources/res/app_theme.dart';
 import 'package:active_link/Utils/widgets/others/app_text.dart';
 import 'package:active_link/View/HomeScreen/home_screen.dart';
@@ -45,7 +44,7 @@ class _BottomNavViewState extends State<BottomNavView> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 customColumn(
-                    icon: Icons.grid_view_sharp,
+                    icon: "assets/images/Shift List.png",
                     txt: "Shift List ",
                     ontap: () {
                       setState(() {
@@ -53,7 +52,7 @@ class _BottomNavViewState extends State<BottomNavView> {
                       });
                     }),
                 customColumn(
-                    icon: Icons.home,
+                    icon: "assets/images/Home.png",
                     txt: " Home ",
                     ontap: () {
                       setState(() {
@@ -61,7 +60,7 @@ class _BottomNavViewState extends State<BottomNavView> {
                       });
                     }),
                 customColumn(
-                    icon: Icons.person,
+                    icon:"assets/images/Profile.png",
                     txt: "Profile",
                     ontap: () {
                       setState(() {
@@ -79,11 +78,7 @@ class _BottomNavViewState extends State<BottomNavView> {
       onTap: ontap,
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: AppTheme.whiteColor,
-            size: 30,
-          ),
+          Image.asset("$icon",height: 30,width: 30,),
           const SizedBox(
             height: 5,
           ),
