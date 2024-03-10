@@ -9,7 +9,8 @@ class FullSizeImageUrlScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Image.network(
+        child:   
+         Image.network(
           imageUrl,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) {

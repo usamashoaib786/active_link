@@ -1,11 +1,9 @@
-import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:active_link/View/Authentication/login_screen.dart';
 import 'package:active_link/View/ClientDataEntry/behaviourLog/behaviour_log_api.dart';
+import 'package:active_link/config/keys/pref_keys.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:active_link/Constants/app_logger.dart';
 import 'package:active_link/Utils/custom_appbar.dart';
@@ -19,6 +17,7 @@ import 'package:active_link/config/dio/app_dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BehaviourLogList extends StatefulWidget {
   const BehaviourLogList({super.key});
@@ -41,6 +40,9 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
   var apiClientresponse;
   var statesResponse;
   var staffResponse;
+  var bAdd;
+  var bEdit;
+  var bView;
   final ExpansionTileController clientController = ExpansionTileController();
   final ExpansionTileController stateController = ExpansionTileController();
 
@@ -54,6 +56,7 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
     dio = AppDio(context);
     logger.init();
     getClients();
+    getPreferences();
     behaviourLogList();
     super.initState();
   }
@@ -69,6 +72,15 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
     } catch (e) {
       throw Exception('Failed to fetch data: $e');
     }
+  }
+
+  getPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      bAdd = prefs.getString(PrefKey.bLogAdd);
+      bEdit = prefs.getString(PrefKey.bLogEdit);
+      bView = prefs.getString(PrefKey.bLogView);
+    });
   }
 
   // Create PDF from JSON data
@@ -124,7 +136,7 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
     return Scaffold(
       appBar: CustomAppBar(
         title: "Behaviour Log List",
-        trailing: true,
+        trailing: bAdd == "on" ? true : false,
         img: "assets/images/Vector.png",
         onTap: () {
           push(
@@ -164,17 +176,6 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
                             height: 36,
                             borderColor: const Color(0xff3EB1B1),
                             textColor: const Color(0xff3EB1B1)),
-                        // GestureDetector(//alisher commented code
-                        //   onTap: () async {
-                        //     final data = await service.createHelloWorld();
-                        //     service.savePdfFile("invoice", data);
-                        //   },
-                        //   child: SizedBox(
-                        //     height: 25,
-                        //     width: 25,
-                        //     child: Image.asset("assets/images/image 18.png"),
-                        //   ),
-                        // ),
                         GestureDetector(
                           onTap: () {
                             behavioursApiService.behavioursLogs(
@@ -218,7 +219,7 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
                           SizedBox(
                             height: 150,
                             child: ListView.builder(
-                              physics: ScrollPhysics(),
+                              physics: const ScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: apiClientresponse.length,
                               itemBuilder: (context, index) {
@@ -274,7 +275,7 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
                           SizedBox(
                             height: 150,
                             child: ListView.builder(
-                              physics: ScrollPhysics(),
+                              physics: const ScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: statesResponse.length,
                               itemBuilder: (context, index) {
@@ -452,6 +453,8 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
           stateRes: statesResponse,
           clientRes: apiClientresponse,
           id: idResponse,
+          showEdit: bEdit,
+          showView: bView,
         );
       },
     );
@@ -549,15 +552,12 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
-
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
         setState(() {
           _isLoading = false;
-
-
         });
       } else if (response.statusCode == responseCode500) {
         showSnackBar(context, "${responseData["message"]}");
@@ -613,8 +613,7 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
-
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -679,8 +678,7 @@ class _BehaviourLogListState extends State<BehaviourLogList> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
-
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -726,6 +724,8 @@ class IncidentLogContainer extends StatefulWidget {
   final staffRes;
   final clientRes;
   final id;
+  final showEdit;
+  final showView;
   const IncidentLogContainer(
       {super.key,
       this.behaviourListData,
@@ -733,7 +733,9 @@ class IncidentLogContainer extends StatefulWidget {
       this.clientRes,
       this.id,
       this.staffRes,
-      this.stateRes});
+      this.stateRes,
+      this.showEdit,
+      this.showView});
 
   @override
   State<IncidentLogContainer> createState() => _IncidentLogContainerState();
@@ -782,45 +784,49 @@ class _IncidentLogContainerState extends State<IncidentLogContainer> {
                               textColor: AppTheme.blackColor),
                           Row(
                             children: [
-                              actionContainer(
-                                  onTap: () {
-                                    push(
-                                        context,
-                                        BehaviourLogAdd(
-                                          edit: true,
-                                          showButtons: false,
-                                          staffRes: widget.staffRes,
-                                          stateRes: widget.stateRes,
-                                          clientRes: widget.clientRes,
-                                          name: widget.name,
-                                          id: widget.id,
-                                          logId: widget.behaviourListData[
-                                              "client_behaviour_id"],
-                                        ));
-                                  },
-                                  icon: Icons.visibility,
-                                  color: const Color(0xff1A0B8F)),
+                              widget.showView == "on"
+                                  ? actionContainer(
+                                      onTap: () {
+                                        push(
+                                            context,
+                                            BehaviourLogAdd(
+                                              edit: true,
+                                              showButtons: false,
+                                              staffRes: widget.staffRes,
+                                              stateRes: widget.stateRes,
+                                              clientRes: widget.clientRes,
+                                              name: widget.name,
+                                              id: widget.id,
+                                              logId: widget.behaviourListData[
+                                                  "client_behaviour_id"],
+                                            ));
+                                      },
+                                      icon: Icons.visibility,
+                                      color: const Color(0xff1A0B8F))
+                                  : const SizedBox.shrink(),
                               const SizedBox(
                                 width: 10,
                               ),
-                              actionContainer(
-                                  onTap: () {
-                                    push(
-                                        context,
-                                        BehaviourLogAdd(
-                                          edit: true,
-                                          showButtons: true,
-                                          staffRes: widget.staffRes,
-                                          stateRes: widget.stateRes,
-                                          clientRes: widget.clientRes,
-                                          name: widget.name,
-                                          id: widget.id,
-                                          logId: widget.behaviourListData[
-                                              "client_behaviour_id"],
-                                        ));
-                                  },
-                                  icon: Icons.edit,
-                                  color: const Color(0xff1A0B8F)),
+                              widget.showEdit == "on"
+                                  ? actionContainer(
+                                      onTap: () {
+                                        push(
+                                            context,
+                                            BehaviourLogAdd(
+                                              edit: true,
+                                              showButtons: true,
+                                              staffRes: widget.staffRes,
+                                              stateRes: widget.stateRes,
+                                              clientRes: widget.clientRes,
+                                              name: widget.name,
+                                              id: widget.id,
+                                              logId: widget.behaviourListData[
+                                                  "client_behaviour_id"],
+                                            ));
+                                      },
+                                      icon: Icons.edit,
+                                      color: const Color(0xff1A0B8F))
+                                  : const SizedBox.shrink()
                             ],
                           )
                         ],

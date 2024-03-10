@@ -9,11 +9,8 @@ import 'package:active_link/View/ShiftListScreen/map_screen.dart';
 import 'package:active_link/View/ShiftListScreen/shift_detail_screen.dart';
 import 'package:active_link/config/app_urls.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:location/location.dart' as location_plugin;
 import 'package:active_link/config/dio/app_dio.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class ShiftListScreen extends StatefulWidget {
   const ShiftListScreen({super.key});
@@ -319,8 +316,16 @@ class _ShiftListScreenState extends State<ShiftListScreen> {
                                                                 ),
                                                                 AppButton.appButton(
                                                                     "Complete",
-                                                                    onTap:
-                                                                        () {},
+                                                                    onTap: () {
+                                                                  push(
+                                                                      context,
+                                                                      MapScreen(
+                                                                          breakIn:
+                                                                              false,
+                                                                          id: finalResponse["shifts"][index]
+                                                                              [
+                                                                              "shift_id"]));
+                                                                },
                                                                     height: 22,
                                                                     textColor:
                                                                         AppTheme
@@ -425,7 +430,6 @@ class _ShiftListScreenState extends State<ShiftListScreen> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -486,7 +490,6 @@ class _ShiftListScreenState extends State<ShiftListScreen> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -550,7 +553,6 @@ class _ShiftListScreenState extends State<ShiftListScreen> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -615,7 +617,6 @@ class _ShiftListScreenState extends State<ShiftListScreen> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -696,7 +697,6 @@ class _ShiftListScreenState extends State<ShiftListScreen> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -755,7 +755,6 @@ class _ShiftListScreenState extends State<ShiftListScreen> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:active_link/Constants/app_logger.dart';
 import 'package:active_link/Utils/custom_appbar.dart';
 import 'package:active_link/Utils/resources/res/app_theme.dart';
@@ -11,14 +9,11 @@ import 'package:active_link/View/ClientDataEntry/ProgressLogList/progree_log_add
 import 'package:active_link/View/ClientDataEntry/ProgressLogList/progress_log_api.dart';
 import 'package:active_link/config/app_urls.dart';
 import 'package:active_link/config/dio/app_dio.dart';
+import 'package:active_link/config/keys/pref_keys.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_launcher_icons/logger.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pdf/widgets.dart' as pw;
 
 import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProgressLogList extends StatefulWidget {
   const ProgressLogList({super.key});
@@ -46,7 +41,9 @@ class _ProgressLogListState extends State<ProgressLogList> {
 
   final ExpansionTileController clientController = ExpansionTileController();
   final ExpansionTileController stateController = ExpansionTileController();
-
+  var pAdd;
+  var pEdit;
+  var pView;
   var clientId;
   var stateId;
   @override
@@ -57,6 +54,16 @@ class _ProgressLogListState extends State<ProgressLogList> {
     getProgressLogList();
     super.initState();
   }
+
+  getPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      pAdd = prefs.getString(PrefKey.pLogAdd);
+      pEdit = prefs.getString(PrefKey.pLogEdit);
+      pView = prefs.getString(PrefKey.pLogView);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -64,7 +71,7 @@ class _ProgressLogListState extends State<ProgressLogList> {
     return Scaffold(
       appBar: CustomAppBar(
         title: "Progress Log List",
-        trailing: true,
+        trailing: pAdd == "on" ? true : false,
         img: "assets/images/Vector.png",
         onTap: () {
           push(
@@ -365,6 +372,8 @@ class _ProgressLogListState extends State<ProgressLogList> {
                                 stateRes: statesResponse,
                                 clientRes: apiClientresponse,
                                 id: idResponse,
+                                showEdit: pEdit,
+                                showView: pView,
                               );
                             },
                           ),
@@ -471,7 +480,6 @@ class _ProgressLogListState extends State<ProgressLogList> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -534,7 +542,6 @@ class _ProgressLogListState extends State<ProgressLogList> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -600,7 +607,6 @@ class _ProgressLogListState extends State<ProgressLogList> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -644,6 +650,8 @@ class IncidentLogContainer extends StatefulWidget {
   final staffRes;
   final clientRes;
   final id;
+  final showEdit;
+  final showView;
   const IncidentLogContainer(
       {super.key,
       this.data,
@@ -651,7 +659,9 @@ class IncidentLogContainer extends StatefulWidget {
       this.clientRes,
       this.id,
       this.staffRes,
-      this.stateRes});
+      this.stateRes,
+      this.showEdit,
+      this.showView});
 
   @override
   State<IncidentLogContainer> createState() => _IncidentLogContainerState();
@@ -698,45 +708,49 @@ class _IncidentLogContainerState extends State<IncidentLogContainer> {
                               textColor: AppTheme.blackColor),
                           Row(
                             children: [
-                              actionContainer(
-                                  onTap: () {
-                                    push(
-                                        context,
-                                        ProgressLogAdd(
-                                          staffRes: widget.staffRes,
-                                          stateRes: widget.stateRes,
-                                          clientRes: widget.clientRes,
-                                          name: widget.name,
-                                          id: widget.id,
-                                          showButton: false,
-                                          edit: true,
-                                          logId:
-                                              widget.data["client_pogress_id"],
-                                        ));
-                                  },
-                                  icon: Icons.visibility,
-                                  color: const Color(0xff1A0B8F)),
+                              widget.showView == "on"
+                                  ? actionContainer(
+                                      onTap: () {
+                                        push(
+                                            context,
+                                            ProgressLogAdd(
+                                              staffRes: widget.staffRes,
+                                              stateRes: widget.stateRes,
+                                              clientRes: widget.clientRes,
+                                              name: widget.name,
+                                              id: widget.id,
+                                              showButton: false,
+                                              edit: true,
+                                              logId: widget
+                                                  .data["client_pogress_id"],
+                                            ));
+                                      },
+                                      icon: Icons.visibility,
+                                      color: const Color(0xff1A0B8F))
+                                  : SizedBox.shrink(),
                               const SizedBox(
                                 width: 10,
                               ),
-                              actionContainer(
-                                  onTap: () {
-                                    push(
-                                        context,
-                                        ProgressLogAdd(
-                                          showButton: true,
-                                          edit: true,
-                                          staffRes: widget.staffRes,
-                                          stateRes: widget.stateRes,
-                                          clientRes: widget.clientRes,
-                                          name: widget.name,
-                                          id: widget.id,
-                                          logId:
-                                              widget.data["client_pogress_id"],
-                                        ));
-                                  },
-                                  icon: Icons.edit,
-                                  color: const Color(0xff1A0B8F)),
+                              widget.showEdit == "on"
+                                  ? actionContainer(
+                                      onTap: () {
+                                        push(
+                                            context,
+                                            ProgressLogAdd(
+                                              showButton: true,
+                                              edit: true,
+                                              staffRes: widget.staffRes,
+                                              stateRes: widget.stateRes,
+                                              clientRes: widget.clientRes,
+                                              name: widget.name,
+                                              id: widget.id,
+                                              logId: widget
+                                                  .data["client_pogress_id"],
+                                            ));
+                                      },
+                                      icon: Icons.edit,
+                                      color: const Color(0xff1A0B8F))
+                                  : SizedBox.shrink()
                             ],
                           )
                         ],

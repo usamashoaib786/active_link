@@ -7,6 +7,7 @@ import 'package:active_link/Utils/utils.dart';
 import 'package:active_link/Utils/widgets/others/app_button.dart';
 import 'package:active_link/Utils/widgets/others/app_text.dart';
 import 'package:active_link/View/Authentication/login_screen.dart';
+import 'package:active_link/View/ChatScreens/file_viwer.dart';
 import 'package:active_link/View/ChatScreens/pic_view.dart';
 import 'package:active_link/View/ProfileScreen/compilence.dart';
 import 'package:active_link/config/app_urls.dart';
@@ -41,9 +42,16 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
 
   Future<void> pickDocument() async {
     final path = await FlutterDocumentPicker.openDocument(
-        params: FlutterDocumentPickerParams(
-            allowedFileExtensions: ['pdf', 'png', 'jpeg', 'txt', 'docx', 'jpg'],
-            invalidFileNameSymbols: ['/']));
+        params: FlutterDocumentPickerParams(allowedFileExtensions: [
+      'pdf',
+      'png',
+      'jpeg',
+      'txt',
+      'docx',
+      'jpg',
+    ], invalidFileNameSymbols: [
+      '/'
+    ]));
     if (path != null) {
       setState(() {
         _pickedFilePath = path;
@@ -113,10 +121,10 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
                 child: Card(
                   elevation: 20,
                   child: Container(
-                    color: Colors.amber,
+                    color: Colors.grey,
                     height: 200,
                     width: 200,
-                    child: _buildSelectedImage(),
+                    child: _buildSelectedFile(_pickedFilePath!),
                   ),
                 ),
               ),
@@ -159,35 +167,71 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
                 : img != ""
                     ? Card(
                         elevation: 10,
-                        child: GestureDetector(
-                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    FullSizeImageUrlScreen(
-                                  imageUrl:
-                                      "https://portaltest.thebrandwings.com//upload/attachment/$img",
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            height: 170,
-                            width: 170,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(15),
-                              child: Image.network(
-                                "https://portaltest.thebrandwings.com//upload/attachment/$img",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
+                        child: _buildSelectedWidget(img),
                       )
                     : SizedBox.shrink()),
       ],
     );
+  }
+
+  Widget _buildSelectedWidget(String imgUrl) {
+    if (imgUrl != null) {
+      String extension = imgUrl.split('.').last.toLowerCase();
+      if (extension == 'jpg' ||
+          extension == 'jpeg' ||
+          extension == 'png' ||
+          extension == 'gif') {
+        // Display image
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FullSizeImageUrlScreen(
+                  imageUrl:
+                      "https://portaltest.thebrandwings.com//upload/attachment/$imgUrl",
+                ),
+              ),
+            );
+          },
+          child: Container(
+            height: 170,
+            width: 170,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.network(
+                "https://portaltest.thebrandwings.com//upload/attachment/$imgUrl",
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        );
+      } else if (extension == 'pdf') {
+        // Display PDF icon or thumbnail
+        return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PdfViewerPage(
+                    url:
+                        "https://portaltest.thebrandwings.com//upload/attachment/$imgUrl",
+                  ),
+                ),
+              );
+            },
+            child: Icon(Icons.picture_as_pdf, size: 50));
+      } else if (extension == 'xlsx' || extension == 'xls') {
+        // Display Excel icon or thumbnail
+        return Icon(Icons.table_chart, size: 50);
+      } else {
+        // For other file types, display a generic file icon
+        return Icon(Icons.insert_drive_file, size: 50);
+      }
+    } else {
+      // No file selected, display nothing
+      return Container(); // Or any default placeholder widget
+    }
   }
 
   Widget _buildUserInput() {
@@ -249,15 +293,37 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
     );
   }
 
-  Widget _buildSelectedImage() {
-    return _pickedFilePath != null
-        ? Image.file(
-            File(_pickedFilePath!),
-            width: 200,
-            height: 200,
-            fit: BoxFit.cover,
-          )
-        : Container(); // Or any default placeholder widget
+  Widget _buildSelectedFile(String filePath) {
+    if (filePath != null) {
+      String extension = filePath
+          .split('.')
+          .last
+          .toLowerCase(); // Extract extension without path package
+      if (extension == 'jpg' ||
+          extension == 'jpeg' ||
+          extension == 'png' ||
+          extension == 'gif') {
+        // Display image
+        return Image.file(
+          File(filePath),
+          width: 200,
+          height: 200,
+          fit: BoxFit.cover,
+        );
+      } else if (extension == 'pdf') {
+        // Display PDF icon or thumbnail
+        return Icon(Icons.picture_as_pdf, size: 50);
+      } else if (extension == 'xlsx' || extension == 'xls') {
+        // Display Excel icon or thumbnail
+        return Icon(Icons.table_chart, size: 50);
+      } else {
+        // For unsupported file types, display a placeholder or generic icon
+        return Icon(Icons.insert_drive_file, size: 50);
+      }
+    } else {
+      // No file selected, display nothing
+      return Container(); // Or any default placeholder widget
+    }
   }
 
   void getChat() async {

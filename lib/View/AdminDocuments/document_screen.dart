@@ -74,7 +74,6 @@ class _AdminDocumentScreenState extends State<AdminDocumentScreen> {
         setState(() {
           _isLoading = false;
           pushUntil(context, LogInScreen());
-
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -161,7 +160,19 @@ class _DocumentContainerState extends State<DocumentContainer> {
                             child: Container(
                               height: 25,
                               width: 25,
-                              child: Image.asset("assets/images/image 36.png"),
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadiusDirectional.circular(100),
+                                  border: Border.all(
+                                      width: 1,
+                                      color: const Color(0xff1A0B8F))),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.visibility,
+                                  color: Color(0xff1A0B8F),
+                                  size: 15,
+                                ),
+                              ),
                             ),
                           )
                         ],

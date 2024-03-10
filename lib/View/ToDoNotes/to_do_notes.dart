@@ -4,7 +4,6 @@ import 'package:active_link/Utils/resources/res/app_theme.dart';
 import 'package:active_link/Utils/utils.dart';
 import 'package:active_link/Utils/widgets/others/app_text.dart';
 import 'package:active_link/View/Authentication/login_screen.dart';
-import 'package:active_link/View/ClientDataEntry/IncidentLog/incident_log_add.dart';
 import 'package:active_link/View/ToDoNotes/add_todo.dart';
 import 'package:active_link/View/ToDoNotes/edit_todo.dart';
 import 'package:active_link/config/app_urls.dart';
@@ -38,7 +37,7 @@ class _ToDoNotesScreenState extends State<ToDoNotesScreen> {
       appBar: CustomAppBar(
         title: "All To Do List",
         trailing: true,
-        img: "assets/images/image 38.png",
+        img: "assets/images/plus.png",
         onTap: () {
           push(context, const AddToDoList());
         },

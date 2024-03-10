@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:active_link/Constants/app_logger.dart';
 import 'package:active_link/Utils/resources/res/app_theme.dart';
 import 'package:active_link/Utils/utils.dart';
@@ -13,6 +15,7 @@ import 'package:active_link/View/HomeScreen/provider.dart';
 import 'package:active_link/View/LeaveList/leave_list.dart';
 import 'package:active_link/View/LeaveList/leave_request_form.dart';
 import 'package:active_link/View/ProfileScreen/profile_screen.dart';
+import 'package:active_link/View/ShiftListScreen/complete_shift_screen.dart';
 import 'package:active_link/View/ShiftListScreen/shift_screen.dart';
 import 'package:active_link/View/TaskManagement/complete_task.dart';
 import 'package:active_link/View/TaskManagement/task_details.dart';
@@ -37,6 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<List<Color>> gradients = [
     [const Color(0xFFBD06A8), const Color(0x21BD05A7)], // Gradient 1
     [const Color(0xFF09C7A6), const Color.fromARGB(133, 220, 227, 226)],
+    [const Color(0xFF06BD7D), const Color(0x0006BD7D)],
+    [const Color(0xFFFFA351), const Color(0x7EFFA351), const Color(0x00FFA351)],
     [const Color(0xFF0A85C7), const Color(0x000A85C7)],
     [const Color(0xFFFFA351), const Color(0x7EFFA351), const Color(0x00FFA351)],
     [const Color(0xFF06BD7D), const Color(0x0006BD7D)],
@@ -44,6 +49,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var finalResponse;
   final List img = [
+    "assets/images/My Shifts (2).png",
+    "assets/images/Completed Shifts.png",
     "assets/images/My Shifts (2).png",
     "assets/images/Completed Shifts.png",
     "assets/images/Behaviour Registered.png",
@@ -54,6 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final List txt = [
     "Assigned Task",
     "Completed Task",
+    "My Shifts",
+    "Completed Shifts",
     "Behaviour Registered",
     "Leave List",
     "Progress List",
@@ -68,12 +77,27 @@ class _MyHomePageState extends State<MyHomePage> {
   AppLogger logger = AppLogger();
   var notificationResponse;
   bool _isLoading = false;
+  int _counter = 0;
+  late Timer _timer;
   @override
   void initState() {
     dio = AppDio(context);
     logger.init();
     homePageApi();
+    _startTimer();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    const duration = const Duration(
+        minutes: 30); // Change the duration according to your requirement
+    _timer = Timer.periodic(duration, (Timer t) => homePageApi());
   }
 
   @override
@@ -98,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(
         children: [
           ListView.builder(
-            itemCount: 5,
+            itemCount: 7,
             itemBuilder: (context, index) {
               return Padding(
                   padding: const EdgeInsets.only(
@@ -110,13 +134,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           : index == 1
                               ? push(context, const CompletedTaskScreen())
                               : index == 2
-                                  ? push(context, const BehaviourLogList())
+                                  ? push(context, const ShiftListScreen())
                                   : index == 3
-                                      ? push(context, const LeaveListScreen())
+                                      ? push(
+                                          context, const CompletedShiftList())
                                       : index == 4
                                           ? push(
-                                              context, const ProgressLogList())
-                                          : Null;
+                                              context, const BehaviourLogList())
+                                          : index == 5
+                                              ? push(context,
+                                                  const LeaveListScreen())
+                                              : index == 6
+                                                  ? push(context,
+                                                      const ProgressLogList())
+                                                  : Null;
                     },
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -161,12 +192,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                           : index == 1
                                               ? "${finalResponse["completedtaskcount"]}"
                                               : index == 2
-                                                  ? "${finalResponse["behaviourcount"]}"
+                                                  ? "${finalResponse["shiftcount"]}"
                                                   : index == 3
-                                                      ? "${finalResponse["leavecount"]}"
+                                                      ? "${finalResponse["completedshiftscount"]}"
                                                       : index == 4
-                                                          ? "${finalResponse["progresscount"]}"
-                                                          : "",
+                                                          ? "${finalResponse["behaviourcount"]}"
+                                                          : index == 5
+                                                              ? "${finalResponse["leavecount"]}"
+                                                              : index == 6
+                                                                  ? "${finalResponse["progresscount"]}"
+                                                                  : "",
                                       textColor: AppTheme.whiteColor,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)
@@ -704,7 +739,7 @@ class _MyDrawerState extends State<MyDrawer> {
                           Icons.more_horiz,
                           size: 30,
                         ),
-                        title: AppText.appText('Complete Task List',
+                        title: AppText.appText('Completed Task List',
                             fontSize: 14, fontWeight: FontWeight.w400),
                         onTap: () {
                           push(context, const CompletedTaskScreen());

@@ -63,7 +63,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       width: 30,
                       decoration: BoxDecoration(
                           color: Colors.transparent,
-                          image: DecorationImage(image: AssetImage("$img"))),
+                          image: DecorationImage(image: AssetImage("$img"),)),
                     ),
                 )
                 : const SizedBox(

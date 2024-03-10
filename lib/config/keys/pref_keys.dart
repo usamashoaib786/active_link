@@ -8,7 +8,17 @@ class PrefKey {
   static const String notification = "notification";
   static const String id = "id";
   static const String regId = "regId";
+  static const String bLogAdd = "bLogAdd";
+  static const String bLogEdit = "bLogEdit";
+  static const String bLogView = "bLogView";
 
+  static const String pLogAdd = "pLogAdd";
+  static const String pLogEdit = "pLogEdit";
+  static const String pLogView = "pLogView";
+
+  static const String iLogAdd = "iLogAdd";
+  static const String iLogEdit = "iLogEdit";
+  static const String iLogView = "iLogView";
   static const String adminId = "adminId";
   static const String type = "type";
   static const String verified = "verified";

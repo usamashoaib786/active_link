@@ -225,14 +225,41 @@ class _LogInScreenState extends State<LogInScreen> {
           var token = responseData["staff_details"][0]["auth_token"];
           var adminId = responseData["staff_details"][0]["admin_id"];
           var regId = responseData["staff_details"][0]["registration_id"];
-
-
-          print("var   ${token}");
+          var bLogAdd =
+              responseData["staff_details"][0]["role_behaviour_log_add"];
+          var bLogEdit =
+              responseData["staff_details"][0]["role_behaviour_log_edit"];
+          var bLogView =
+              responseData["staff_details"][0]["role_behaviour_log_view"];
+          var iLogAdd =
+              responseData["staff_details"][0]["role_incident_log_add"];
+          var iLogEdit =
+              responseData["staff_details"][0]["role_incident_log_edit"];
+          var iLogView =
+              responseData["staff_details"][0]["role_incident_log_view"];
+          var pLogAdd =
+              responseData["staff_details"][0]["role_progress_log_add"];
+          var pLogEdit =
+              responseData["staff_details"][0]["role_progress_log_edit"];
+          var pLogView =
+              responseData["staff_details"][0]["role_progress_log_view"];
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString(PrefKey.authorization, token ?? '');
           prefs.setString(PrefKey.adminId, adminId ?? '');
           prefs.setString(PrefKey.regId, regId ?? '');
+          ////////////////////////////////////////////////////////
+          prefs.setString(PrefKey.bLogAdd, bLogAdd ?? '');
+          prefs.setString(PrefKey.bLogEdit, bLogEdit ?? '');
+          prefs.setString(PrefKey.bLogView, bLogView ?? '');
+////////////////////////////////////////////////////////////////////////////////////
+          prefs.setString(PrefKey.iLogAdd, iLogAdd ?? '');
+          prefs.setString(PrefKey.iLogEdit, iLogEdit ?? '');
+          prefs.setString(PrefKey.iLogView, iLogView ?? '');
+///////////////////////////////////////////////////////////////////////////////
+          prefs.setString(PrefKey.pLogAdd, pLogAdd ?? '');
+          prefs.setString(PrefKey.pLogEdit, pLogEdit ?? '');
+          prefs.setString(PrefKey.pLogView, bLogView ?? '');
 
           Navigator.pushAndRemoveUntil(
               context,
@@ -250,7 +277,6 @@ class _LogInScreenState extends State<LogInScreen> {
       });
     }
   }
-
 }
    
 

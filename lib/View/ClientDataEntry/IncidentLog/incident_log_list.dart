@@ -11,6 +11,7 @@ import 'package:active_link/View/ClientDataEntry/IncidentLog/incident_log_add.da
 import 'package:active_link/View/ClientDataEntry/IncidentLog/incident_log_api.dart';
 import 'package:active_link/config/app_urls.dart';
 import 'package:active_link/config/dio/app_dio.dart';
+import 'package:active_link/config/keys/pref_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class IncidentLogList extends StatefulWidget {
   const IncidentLogList({super.key});
@@ -43,14 +45,26 @@ class _IncidentLogListState extends State<IncidentLogList> {
   var clientId;
   var stateId;
   final incidentApiService = IncidentApiServices();
-
+  var iAdd;
+  var iEdit;
+  var iView;
   @override
   void initState() {
     dio = AppDio(context);
     logger.init();
     getClients();
     getIncidentLogList();
+    getPreferences();
     super.initState();
+  }
+
+  getPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      iAdd = prefs.getString(PrefKey.iLogAdd);
+      iEdit = prefs.getString(PrefKey.iLogEdit);
+      iView = prefs.getString(PrefKey.iLogView);
+    });
   }
 
   Future<Map<String, dynamic>> fetchData() async {
@@ -135,7 +149,7 @@ class _IncidentLogListState extends State<IncidentLogList> {
     return Scaffold(
       appBar: CustomAppBar(
         title: "Incident Log List",
-        trailing: true,
+        trailing: iAdd == "on" ? true : false,
         img: "assets/images/Vector.png",
         onTap: () {
           push(context, const IncidentLogAdd());
@@ -208,7 +222,7 @@ class _IncidentLogListState extends State<IncidentLogList> {
                           SizedBox(
                             height: 150,
                             child: ListView.builder(
-                              physics: ScrollPhysics(),
+                              physics: const ScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: apiClientresponse.length,
                               itemBuilder: (context, index) {
@@ -264,7 +278,7 @@ class _IncidentLogListState extends State<IncidentLogList> {
                           SizedBox(
                             height: 150,
                             child: ListView.builder(
-                              physics: ScrollPhysics(),
+                              physics: const ScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: statesResponse.length,
                               itemBuilder: (context, index) {
@@ -424,6 +438,8 @@ class _IncidentLogListState extends State<IncidentLogList> {
                             itemBuilder: (context, index) {
                               return IncidentLogContainer(
                                 data: finalResponse[index],
+                                showEdit: iEdit,
+                                showView: iView,
                               );
                             },
                           ),
@@ -534,8 +550,7 @@ class _IncidentLogListState extends State<IncidentLogList> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
-
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -593,8 +608,7 @@ class _IncidentLogListState extends State<IncidentLogList> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
-
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -654,8 +668,7 @@ class _IncidentLogListState extends State<IncidentLogList> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
-
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -695,7 +708,10 @@ class _IncidentLogListState extends State<IncidentLogList> {
 
 class IncidentLogContainer extends StatefulWidget {
   final data;
-  const IncidentLogContainer({super.key, this.data});
+  final showEdit;
+  final showView;
+  const IncidentLogContainer(
+      {super.key, this.data, this.showEdit, this.showView});
 
   @override
   State<IncidentLogContainer> createState() => _IncidentLogContainerState();
@@ -742,35 +758,39 @@ class _IncidentLogContainerState extends State<IncidentLogContainer> {
                               textColor: AppTheme.blackColor),
                           Row(
                             children: [
-                              actionContainer(
-                                  onTap: () {
-                                    push(
-                                        context,
-                                        IncidentLogAdd(
-                                            showButton: false,
-                                            edit: true,
-                                            logId:
-                                                widget.data["client_incident_id"],
+                              widget.showView == "on"
+                                  ? actionContainer(
+                                      onTap: () {
+                                        push(
+                                            context,
+                                            IncidentLogAdd(
+                                              showButton: false,
+                                              edit: true,
+                                              logId: widget
+                                                  .data["client_incident_id"],
                                             ));
-                                  },
-                                  icon: Icons.visibility,
-                                  color: const Color(0xff1A0B8F)),
+                                      },
+                                      icon: Icons.visibility,
+                                      color: const Color(0xff1A0B8F))
+                                  : const SizedBox.shrink(),
                               const SizedBox(
                                 width: 10,
                               ),
-                              actionContainer(
-                                  onTap: () {
-                                    push(
-                                        context,
-                                        IncidentLogAdd(
-                                          showButton: true,
-                                          edit: true,
-                                          logId:
-                                              widget.data["client_incident_id"],
-                                        ));
-                                  },
-                                  icon: Icons.edit,
-                                  color: const Color(0xff1A0B8F)),
+                              widget.showEdit == "on"
+                                  ? actionContainer(
+                                      onTap: () {
+                                        push(
+                                            context,
+                                            IncidentLogAdd(
+                                              showButton: true,
+                                              edit: true,
+                                              logId: widget
+                                                  .data["client_incident_id"],
+                                            ));
+                                      },
+                                      icon: Icons.edit,
+                                      color: const Color(0xff1A0B8F))
+                                  : const SizedBox.shrink()
                             ],
                           )
                         ],

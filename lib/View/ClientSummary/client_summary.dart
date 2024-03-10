@@ -295,7 +295,7 @@ class _ClientSummaryState extends State<ClientSummary> {
     return Scaffold(
       appBar: CustomAppBar(
         title: "Client Summary",
-        img: "assets/images/clientSummary.png",
+        img: "assets/images/plus.png",
         trailing: true,
         onTap: () {
           showNotificationPopup();
@@ -316,12 +316,17 @@ class _ClientSummaryState extends State<ClientSummary> {
                       height: 100,
                       width: 100,
                       decoration: BoxDecoration(
-                          // color: Colors.black,
-                          borderRadius: BorderRadius.circular(100),
-                          image: DecorationImage(
-                              image: NetworkImage(
-                                  "https://portaltest.thebrandwings.com/upload/${finalResponse["folder"]}/${finalResponse["profile_pic"]}"),
-                              fit: BoxFit.fill)),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: finalResponse["profile_pic"] == ""
+                          ? Image.asset("assets/images/user.png",
+                              fit: BoxFit.cover)
+                          : ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.network(
+                                "https://portaltest.thebrandwings.com/upload/${finalResponse["folder"]}/${finalResponse["profile_pic"]}",
+                                fit: BoxFit.fill),
+                          ),
                     ),
                     const SizedBox(
                       height: 20,
@@ -2364,7 +2369,7 @@ class _ClientSummaryState extends State<ClientSummary> {
         } else {
           setState(() {
             _isLoading = false;
-            finalResponse = responseData["allclientdata"][0];
+            finalResponse = responseData["clientdata"][0];
             staffDetail = responseData["staffdetails"][0];
             criticalMedical = responseData["client_diagnosed_disability"];
             clientPlacementHistory = responseData["client_placement_history"];
