@@ -95,8 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startTimer() {
-    const duration = const Duration(
-        minutes: 30); // Change the duration according to your requirement
+    const duration = Duration(
+        minutes: 30 ); // Change the duration according to your requirement
     _timer = Timer.periodic(duration, (Timer t) => homePageApi());
   }
 

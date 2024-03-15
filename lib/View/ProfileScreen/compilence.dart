@@ -5,18 +5,16 @@ import 'package:active_link/Utils/resources/res/app_theme.dart';
 import 'package:active_link/Utils/utils.dart';
 import 'package:active_link/Utils/widgets/others/app_button.dart';
 import 'package:active_link/Utils/widgets/others/app_text.dart';
+import 'package:active_link/View/Authentication/login_screen.dart';
 import 'package:active_link/config/app_urls.dart';
 import 'package:active_link/config/dio/app_dio.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_document_picker/flutter_document_picker.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class CompilanceScreen extends StatefulWidget {
-  final data;
-  const CompilanceScreen({super.key, this.data});
+  const CompilanceScreen({super.key});
 
   @override
   State<CompilanceScreen> createState() => _CompilanceScreenState();
@@ -27,7 +25,7 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
   List specified = [];
   bool _isLoading = false;
   double _progress = 0.0;
-
+  var finalResponse;
   AppLogger logger = AppLogger();
   late AppDio dio;
   List<String?> _pickedFilePaths = List.generate(5, (index) => null);
@@ -43,21 +41,8 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
   void initState() {
     dio = AppDio(context);
     logger.init();
+    getCompilence();
     super.initState();
-    specified = [
-      "${widget.data["signature"]}",
-      "${widget.data["driving_licence"]}",
-      "${widget.data["first_aid"]}",
-      "${widget.data["walking_with_children"]}",
-      "${widget.data["other_documents"]}",
-    ];
-    expireDate = [
-      "N/A",
-      "${widget.data["dl_exp_date"]}",
-      "${widget.data["first_aid_exp_date"]}",
-      "${widget.data["walking_with_children_exp_date"]}",
-      "N/A"
-    ];
   }
 
   Future<void> pickDocument({required int index}) async {
@@ -88,167 +73,187 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
           trailing: true,
           img: "assets/images/image 42.png",
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: Column(
-              children: [
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: Padding(
-                          padding: const EdgeInsets.only(
-                            right: 20.0,
-                            left: 20,
-                          ),
-                          child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              elevation: 10,
-                              child: SizedBox(
-                                  height: 200,
-                                  width: screenWidth,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15.0, vertical: 10),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        customRow(
-                                          text1: "Catagory",
-                                          text2: "${txt1[index]}",
-                                        ),
-                                        customRow(
-                                            text1: "Expires At",
-                                            text2: "${expireDate[index]}"),
-                                        customRow(
-                                            text1: "Last update ",
-                                            text2: "N/A"),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            AppText.appText("Status",
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                textColor: AppTheme.blackColor),
-                                            AppButton.appButton(
-                                              specified[index] == ""
-                                                  ? "Not Specified"
-                                                  : "Download",
-                                              onTap: () async {
-                                                if (specified[index] != "") {
-                                                     FileDownloader.downloadFile(
-                                                      url:
-                                                          "https://portaltest.thebrandwings.com/${widget.data["upload_path"]}${specified[index]}",
-                                                      notificationType:
-                                                          NotificationType.all,
-                                                      onProgress:
-                                                          (fileName, progress) {
-                                                        setState(() {
-                                                          _progress = progress;
-                                                        });
-                                                      },
-                                                      onDownloadCompleted:
-                                                          (path) {
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext
-                                                              context) {
-                                                            return const DownloadSuccessPopup(
-                                                              msg1:
-                                                                  "Successfully",
+        body: _isLoading == true
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: 5,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10.0),
+                            child: Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 20.0,
+                                  left: 20,
+                                ),
+                                child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    elevation: 10,
+                                    child: SizedBox(
+                                        height: 200,
+                                        width: screenWidth,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15.0, vertical: 10),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              customRow(
+                                                text1: "Catagory",
+                                                text2: "${txt1[index]}",
+                                              ),
+                                              customRow(
+                                                  text1: "Expires At",
+                                                  text2:
+                                                      "${expireDate[index]}"),
+                                              customRow(
+                                                  text1: "Last update ",
+                                                  text2: "N/A"),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  AppText.appText("Status",
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      textColor:
+                                                          AppTheme.blackColor),
+                                                  AppButton.appButton(
+                                                    specified[index] == ""
+                                                        ? "Not Specified"
+                                                        : "Download",
+                                                    onTap: () async {
+                                                      if (specified[index] !=
+                                                          "") {
+                                                        FileDownloader
+                                                            .downloadFile(
+                                                          url:
+                                                              "https://portaltest.thebrandwings.com/${finalResponse["upload_path"]}${specified[index]}",
+                                                          notificationType:
+                                                              NotificationType
+                                                                  .all,
+                                                          onProgress: (fileName,
+                                                              progress) {
+                                                            setState(() {
+                                                              _progress =
+                                                                  progress;
+                                                            });
+                                                          },
+                                                          onDownloadCompleted:
+                                                              (path) {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return const DownloadSuccessPopup(
+                                                                  msg1:
+                                                                      "Successfully",
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                          onDownloadError:
+                                                              (errorMessage) {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return const DownloadSuccessPopup(
+                                                                  msg1:
+                                                                      "Failed",
+                                                                );
+                                                              },
                                                             );
                                                           },
                                                         );
-                                                      },
-                                                      onDownloadError: (errorMessage) {
-                                                          showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext
-                                                              context) {
-                                                            return const DownloadSuccessPopup(
-                                                              msg1:
-                                                                  "Failed",
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    );
-                                               
-                                                //   final status =
-                                                //       await Permission.storage
-                                                //           .request();
-                                                //           print("objectbj$status");
-                                                //   if (status.isGranted) {
-                                                //     final externalDir =
-                                                //         await getExternalStorageDirectory();
 
-                                                //     } else {
-                                                //    showSnackBar(context, "Please enable gallery permission");
-                                                //   }
-                                                }
-                                              },
-                                              height: 22,
-                                              width: 120,
-                                              textColor: AppTheme.whiteColor,
-                                              backgroundColor:
-                                                  specified[index] != ""
-                                                      ? Colors.blue
-                                                      : const Color(0xFFFF0D0D),
-                                            )
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            AppText.appText("Upload",
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                textColor: AppTheme.blackColor),
-                                            AppButton.appButton("Upload",
-                                                onTap: () {
-                                              pickDocument(index: index);
-                                            },
-                                                height: 22,
-                                                width: 120,
-                                                textColor: AppTheme.whiteColor,
-                                                backgroundColor:
-                                                    specified[index] != ""
-                                                        ? Colors.blue
-                                                        : const Color(
-                                                            0xFFFF0D0D))
-                                          ],
-                                        ),
-                                        _pickedFilePaths[index] == null
-                                            ? const SizedBox.shrink()
-                                            : AppText.appText(
-                                                "${_pickedFilePaths[index]}")
-                                      ],
-                                    ),
-                                  )))),
-                    );
-                  },
+                                                        //   final status =
+                                                        //       await Permission.storage
+                                                        //           .request();
+                                                        //           print("objectbj$status");
+                                                        //   if (status.isGranted) {
+                                                        //     final externalDir =
+                                                        //         await getExternalStorageDirectory();
+
+                                                        //     } else {
+                                                        //    showSnackBar(context, "Please enable gallery permission");
+                                                        //   }
+                                                      }
+                                                    },
+                                                    height: 22,
+                                                    width: 120,
+                                                    textColor:
+                                                        AppTheme.whiteColor,
+                                                    backgroundColor:
+                                                        specified[index] != ""
+                                                            ? Colors.blue
+                                                            : const Color(
+                                                                0xFFFF0D0D),
+                                                  )
+                                                ],
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  AppText.appText("Upload",
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      textColor:
+                                                          AppTheme.blackColor),
+                                                  AppButton.appButton("Upload",
+                                                      onTap: () {
+                                                    pickDocument(index: index);
+                                                  },
+                                                      height: 22,
+                                                      width: 120,
+                                                      textColor:
+                                                          AppTheme.whiteColor,
+                                                      backgroundColor:
+                                                          specified[index] != ""
+                                                              ? Colors.blue
+                                                              : const Color(
+                                                                  0xFFFF0D0D))
+                                                ],
+                                              ),
+                                              _pickedFilePaths[index] == null
+                                                  ? const SizedBox.shrink()
+                                                  : AppText.appText(
+                                                      "${_pickedFilePaths[index]}")
+                                            ],
+                                          ),
+                                        )))),
+                          );
+                        },
+                      ),
+                      _isLoading == true
+                          ? const Center(child: CircularProgressIndicator())
+                          : AppButton.appButton("Update", onTap: () {
+                              uploadFile();
+                            },
+                              textColor: AppTheme.whiteColor,
+                              backgroundColor: const Color(0xff00BFA5),
+                              height: 30,
+                              width: 100)
+                    ],
+                  ),
                 ),
-                _isLoading == true
-                    ? const Center(child: CircularProgressIndicator())
-                    : AppButton.appButton("Update", onTap: () {
-                        uploadFile();
-                      },
-                        textColor: AppTheme.whiteColor,
-                        backgroundColor: const Color(0xff00BFA5),
-                        height: 30,
-                        width: 100)
-              ],
-            ),
-          ),
-        ));
+              ));
   }
 
   Widget customRow({text1, text2}) {
@@ -290,7 +295,8 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
 
       FormData formData = FormData.fromMap(Map.fromEntries(List.generate(
           keys.length, (index) => MapEntry(keys[index], files[index]))));
-      formData.fields.add(MapEntry("upload_path", widget.data["upload_path"]));
+      formData.fields
+          .add(MapEntry("upload_path", finalResponse["upload_path"]));
 
       Response response = await dio.post(
         path: AppUrls.uploadDocument,
@@ -302,6 +308,7 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
         setState(() {
           _isLoading = false;
           _pickedFilePaths = List.generate(5, (index) => null);
+          getCompilence();
         });
       } else {
         showSnackBar(context, "${response.data["message"]}");
@@ -331,6 +338,80 @@ class _CompilanceScreenState extends State<CompilanceScreen> {
         return 'other_documents';
       default:
         throw Exception('Invalid index');
+    }
+  }
+
+  void getCompilence() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var response;
+    int responseCode200 = 200; // For successful request.
+    int responseCode400 = 400; // For Bad Request.
+    int responseCode401 = 401; // For Unauthorized access.
+    int responseCode404 = 404; // For For data not found
+    int responseCode500 = 500; // Internal server error.
+
+    try {
+      response = await dio.get(
+        path: AppUrls.profile,
+      );
+      var responseData = response.data;
+      if (response.statusCode == responseCode400) {
+        showSnackBar(context, "${responseData["message"]}");
+        setState(() {
+          _isLoading = false;
+        });
+      } else if (response.statusCode == responseCode401) {
+        showSnackBar(context, "User logged in somewhere else..");
+        setState(() {
+          _isLoading = false;
+          pushUntil(context, LogInScreen());
+        });
+      } else if (response.statusCode == responseCode404) {
+        showSnackBar(context, "${responseData["message"]}");
+        setState(() {
+          _isLoading = false;
+        });
+      } else if (response.statusCode == responseCode500) {
+        showSnackBar(context, "${responseData["message"]}");
+        setState(() {
+          _isLoading = false;
+        });
+      } else if (response.statusCode == responseCode200) {
+        if (responseData["status"] == false) {
+          setState(() {
+            _isLoading = false;
+          });
+
+          return;
+        } else {
+          setState(() {
+            _isLoading = false;
+            finalResponse = responseData["user_details"];
+            specified = [
+              "${finalResponse["signature"]}",
+              "${finalResponse["driving_licence"]}",
+              "${finalResponse["first_aid"]}",
+              "${finalResponse["walking_with_children"]}",
+              "${finalResponse["other_documents"]}",
+            ];
+            expireDate = [
+              "N/A",
+              "${finalResponse["dl_exp_date"]}",
+              "${finalResponse["first_aid_exp_date"]}",
+              "${finalResponse["walking_with_children_exp_date"]}",
+              "N/A"
+            ];
+          });
+        }
+      }
+    } catch (e) {
+      print("Something went Wrong ${e}");
+      showSnackBar(context, "Something went Wrong.");
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 }

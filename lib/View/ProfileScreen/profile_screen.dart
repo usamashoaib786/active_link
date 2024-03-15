@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:active_link/Constants/app_logger.dart';
 import 'package:active_link/Utils/custom_appbar.dart';
 import 'package:active_link/Utils/resources/res/app_theme.dart';
@@ -25,12 +24,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _genderController = TextEditingController();
-  TextEditingController _dobController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   late AppDio dio;
   AppLogger logger = AppLogger();
@@ -54,239 +53,251 @@ class _ProfileScreenState extends State<ProfileScreen> {
         click: false,
         title: "Profile",
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: Column(
-            children: [
-              Container(
-                height: 260,
-                width: screenWidth,
-                color: Colors.transparent,
-                child: Stack(
+      body: finalResponse == null
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30.0),
-                      child: Container(
-                        height: 210,
-                        width: screenWidth,
-                        color: AppTheme.appColor,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 30.0, right: 30, top: 30),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      push(
-                                          context,
-                                          CompilanceScreen(
-                                              data: finalResponse[
-                                                  "user_details"])); 
-                                    },
-                                    child: customContainer(
-                                        img: "assets/images/Test Passed.png"),
-                                  ),
-                                  customContainer(
-                                      img: "assets/images/Pencil.png"),
-                                ],
-                              ),
-                              finalResponse == null
-                                  ? const SizedBox()
-                                  : Align(
+                    Container(
+                      height: 260,
+                      width: screenWidth,
+                      color: Colors.transparent,
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30.0),
+                            child: Container(
+                              height: 210,
+                              width: screenWidth,
+                              color: AppTheme.appColor,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 30.0, right: 30, top: 30),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            push(context,
+                                                const CompilanceScreen());
+                                          },
+                                          child: customContainer(
+                                              img:
+                                                  "assets/images/Test Passed.png"),
+                                        ),
+                                        customContainer(
+                                            img: "assets/images/Pencil.png"),
+                                      ],
+                                    ),
+                                    finalResponse == null
+                                        ? const SizedBox()
+                                        : Align(
+                                            alignment: Alignment.topCenter,
+                                            child: AppText.appText(
+                                                "${finalResponse["user_details"]["full_name"]}",
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                                textColor: AppTheme.whiteColor),
+                                          ),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    Align(
                                       alignment: Alignment.topCenter,
-                                      child: AppText.appText(
-                                          "${finalResponse["user_details"]["full_name"]}",
+                                      child: AppText.appText("2 Months Old",
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                           textColor: AppTheme.whiteColor),
                                     ),
-                              const SizedBox(
-                                height: 8,
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        column1(
+                                            txt1: "Shifts Completed",
+                                            txt2: "6"),
+                                        Container(
+                                          height: 60,
+                                          width: 1,
+                                          color: AppTheme.whiteColor,
+                                        ),
+                                        column1(
+                                            txt1: "Progress Added", txt2: "12"),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: AppText.appText("2 Months Old",
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    textColor: AppTheme.whiteColor),
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  column1(txt1: "Shifts Completed", txt2: "6"),
-                                  Container(
-                                    height: 60,
-                                    width: 1,
-                                    color: AppTheme.whiteColor,
-                                  ),
-                                  column1(txt1: "Progress Added", txt2: "12"),
-                                ],
-                              )
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        width: 212,
-                        height: 43,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(
-                                width: 1, color: Color(0xFFD9D9D9)),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          shadows: const [
-                            BoxShadow(
-                              color: Color(0x3F000000),
-                              blurRadius: 4,
-                              offset: Offset(0, 4),
-                              spreadRadius: 0,
-                            )
-                          ],
-                        ),
-                        child: Center(
-                          child: AppText.appText("Basic Info",
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              textColor: AppTheme.blackColor),
-                        ),
-                      ),
-                    ),
-                    Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          height: 90,
-                          width: 90,
-                          decoration: BoxDecoration(
-                              color: AppTheme.whiteColor,
-                              borderRadius: BorderRadius.circular(100)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: finalResponse == null
-                                ? const Padding(
-                                    padding: EdgeInsets.all(25.0),
-                                    child: CircularProgressIndicator(),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              width: 212,
+                              height: 43,
+                              decoration: ShapeDecoration(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  side: const BorderSide(
+                                      width: 1, color: Color(0xFFD9D9D9)),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                shadows: const [
+                                  BoxShadow(
+                                    color: Color(0x3F000000),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 4),
+                                    spreadRadius: 0,
                                   )
-                                : imagePath != null
-                                    ? Container(
-                                        height: 30,
-                                        width: 30,
-                                        decoration: BoxDecoration(
-                                            color: AppTheme.txtColor,
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            image: DecorationImage(
-                                                image: FileImage(imagePath!),
-                                                fit: BoxFit.cover)),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            _selectImageFrom();
-                                          },
-                                          child: Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: Container(
-                                              height: 30,
-                                              width: 30,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                color: Colors.white,
-                                              ),
-                                              child: Icon(
-                                                Icons.camera_enhance,
-                                                color: AppTheme.appColor,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : Container(
-                                        height: 30,
-                                        width: 30,
-                                        decoration: BoxDecoration(
-                                            color: AppTheme.txtColor,
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            image: DecorationImage(
-                                                image: NetworkImage(
-                                                    "https://portaltest.thebrandwings.com/${finalResponse["user_details"]["upload_path"]}/${finalResponse["user_details"]["image"]}"),
-                                                fit: BoxFit.cover)),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            _selectImageFrom();
-                                          },
-                                          child: Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: Container(
-                                              height: 30,
-                                              width: 30,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                color: Colors.white,
-                                              ),
-                                              child: Icon(
-                                                Icons.camera_enhance,
-                                                color: AppTheme.appColor,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                ],
+                              ),
+                              child: Center(
+                                child: AppText.appText("Basic Info",
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    textColor: AppTheme.blackColor),
+                              ),
+                            ),
                           ),
-                        ))
+                          Align(
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                height: 90,
+                                width: 90,
+                                decoration: BoxDecoration(
+                                    color: AppTheme.whiteColor,
+                                    borderRadius: BorderRadius.circular(100)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: finalResponse == null
+                                      ? const Padding(
+                                          padding: EdgeInsets.all(25.0),
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : imagePath != null
+                                          ? Container(
+                                              height: 30,
+                                              width: 30,
+                                              decoration: BoxDecoration(
+                                                  color: AppTheme.txtColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
+                                                  image: DecorationImage(
+                                                      image:
+                                                          FileImage(imagePath!),
+                                                      fit: BoxFit.cover)),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  _selectImageFrom();
+                                                },
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.bottomRight,
+                                                  child: Container(
+                                                    height: 30,
+                                                    width: 30,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100),
+                                                      color: Colors.white,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.camera_enhance,
+                                                      color: AppTheme.appColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : Container(
+                                              height: 30,
+                                              width: 30,
+                                              decoration: BoxDecoration(
+                                                  color: AppTheme.txtColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
+                                                  image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          "https://portaltest.thebrandwings.com/${finalResponse["user_details"]["upload_path"]}/${finalResponse["user_details"]["image"]}"),
+                                                      fit: BoxFit.cover)),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  _selectImageFrom();
+                                                },
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.bottomRight,
+                                                  child: Container(
+                                                    height: 30,
+                                                    width: 30,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100),
+                                                      color: Colors.white,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.camera_enhance,
+                                                      color: AppTheme.appColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                ),
+                              ))
+                        ],
+                      ),
+                    ),
+                    finalResponse == null
+                        ? const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: CircularProgressIndicator(),
+                          )
+                        : infoCOlumn(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AppButton.appButton("Update", onTap: () {
+                          if (_nameController.text.isNotEmpty &&
+                              _dobController.text.isNotEmpty &&
+                              _emailController.text.isNotEmpty &&
+                              _genderController.text.isNotEmpty &&
+                              _passwordController.text.isNotEmpty &&
+                              _phoneController.text.isNotEmpty) {
+                            updateProfile();
+                          } else {
+                            showSnackBar(context, "Please fill complete form");
+                          }
+                        },
+                            textColor: AppTheme.whiteColor,
+                            backgroundColor: const Color(0xff00BFA5),
+                            height: 30,
+                            width: 110),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              finalResponse == null
-                  ? const Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: CircularProgressIndicator(),
-                    )
-                  : infoCOlumn(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AppButton.appButton("Update", onTap: () {
-                    if (_nameController.text.isNotEmpty &&
-                        _dobController.text.isNotEmpty &&
-                        _emailController.text.isNotEmpty &&
-                        _genderController.text.isNotEmpty &&
-                        _passwordController.text.isNotEmpty &&
-                        _phoneController.text.isNotEmpty) {
-                      updateProfile();
-                    } else {
-                      showSnackBar(context, "Please fill complete form");
-                    }
-                  },
-                      textColor: AppTheme.whiteColor,
-                      backgroundColor: const Color(0xff00BFA5),
-                      height: 30,
-                      width: 110),
-                      
-                  const SizedBox(
-                    width: 10,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
@@ -378,8 +389,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
-
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -439,8 +449,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
-
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");

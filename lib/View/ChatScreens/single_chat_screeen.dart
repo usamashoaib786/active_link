@@ -1,22 +1,17 @@
 import 'dart:io';
-
 import 'package:active_link/Constants/app_logger.dart';
 import 'package:active_link/Utils/custom_appbar.dart';
-import 'package:active_link/Utils/resources/res/app_theme.dart';
 import 'package:active_link/Utils/utils.dart';
-import 'package:active_link/Utils/widgets/others/app_button.dart';
-import 'package:active_link/Utils/widgets/others/app_text.dart';
 import 'package:active_link/View/Authentication/login_screen.dart';
+import 'package:active_link/View/ChatScreens/doc_view.dart';
 import 'package:active_link/View/ChatScreens/file_viwer.dart';
 import 'package:active_link/View/ChatScreens/pic_view.dart';
-import 'package:active_link/View/ProfileScreen/compilence.dart';
 import 'package:active_link/config/app_urls.dart';
 import 'package:active_link/config/dio/app_dio.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_document_picker/flutter_document_picker.dart';
-import 'package:flutter_file_downloader/flutter_file_downloader.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PersonChatSreen extends StatefulWidget {
   final id;
@@ -30,8 +25,8 @@ class PersonChatSreen extends StatefulWidget {
 }
 
 class _PersonChatSreenState extends State<PersonChatSreen> {
-  TextEditingController _textEditingController = TextEditingController();
-  ScrollController _scrollController = ScrollController();
+  final TextEditingController _textEditingController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   late AppDio dio;
   AppLogger logger = AppLogger();
@@ -48,6 +43,7 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
       'jpeg',
       'txt',
       'docx',
+      'doc',
       'jpg',
     ], invalidFileNameSymbols: [
       '/'
@@ -57,6 +53,15 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
         _pickedFilePath = path;
         print("electedfilePath${_pickedFilePath}");
       });
+    }
+  }
+
+  _launchURL({String? url}) async {
+    url = url; // you can use your url
+    if (await canLaunch(url!)) {
+      await launch(url);
+    } else {
+      throw 'Unable to open url : $url';
     }
   }
 
@@ -169,7 +174,7 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
                         elevation: 10,
                         child: _buildSelectedWidget(img),
                       )
-                    : SizedBox.shrink()),
+                    : const SizedBox.shrink()),
       ],
     );
   }
@@ -220,17 +225,21 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
                 ),
               );
             },
-            child: Icon(Icons.picture_as_pdf, size: 50));
+            child: const Icon(Icons.picture_as_pdf, size: 50));
       } else if (extension == 'xlsx' || extension == 'xls') {
-        // Display Excel icon or thumbnail
-        return Icon(Icons.table_chart, size: 50);
+        return const Icon(Icons.table_chart, size: 50);
       } else {
-        // For other file types, display a generic file icon
-        return Icon(Icons.insert_drive_file, size: 50);
+        return GestureDetector(
+            onTap: () {
+              _launchURL(
+                url:
+                    "https://portaltest.thebrandwings.com//upload/attachment/$imgUrl",
+              );
+            },
+            child: const Icon(Icons.insert_drive_file, size: 50));
       }
     } else {
-      // No file selected, display nothing
-      return Container(); // Or any default placeholder widget
+      return Container();
     }
   }
 
@@ -312,13 +321,13 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
         );
       } else if (extension == 'pdf') {
         // Display PDF icon or thumbnail
-        return Icon(Icons.picture_as_pdf, size: 50);
+        return const Icon(Icons.picture_as_pdf, size: 50);
       } else if (extension == 'xlsx' || extension == 'xls') {
         // Display Excel icon or thumbnail
-        return Icon(Icons.table_chart, size: 50);
+        return const Icon(Icons.table_chart, size: 50);
       } else {
         // For unsupported file types, display a placeholder or generic icon
-        return Icon(Icons.insert_drive_file, size: 50);
+        return const Icon(Icons.insert_drive_file, size: 50);
       }
     } else {
       // No file selected, display nothing
@@ -355,7 +364,7 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");
@@ -426,7 +435,7 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
         showSnackBar(context, "User logged in somewhere else..");
         setState(() {
           _isLoading = false;
-          pushUntil(context, LogInScreen());
+          pushUntil(context, const LogInScreen());
         });
       } else if (response.statusCode == responseCode404) {
         showSnackBar(context, "${responseData["message"]}");

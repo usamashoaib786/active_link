@@ -63,6 +63,8 @@ dependencies:
   webview_flutter: ^4.5.0
   html_unescape: ^2.0.0
   advance_pdf_viewer: ^2.0.1
+  android_intent: ^2.0.2
+  url_launcher: ^6.2.5
 
 flutter_icons:
   image_path: "assets/images/app.png"
