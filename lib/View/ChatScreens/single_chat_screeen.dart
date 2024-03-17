@@ -3,7 +3,6 @@ import 'package:active_link/Constants/app_logger.dart';
 import 'package:active_link/Utils/custom_appbar.dart';
 import 'package:active_link/Utils/utils.dart';
 import 'package:active_link/View/Authentication/login_screen.dart';
-import 'package:active_link/View/ChatScreens/doc_view.dart';
 import 'package:active_link/View/ChatScreens/file_viwer.dart';
 import 'package:active_link/View/ChatScreens/pic_view.dart';
 import 'package:active_link/config/app_urls.dart';
@@ -17,7 +16,6 @@ class PersonChatSreen extends StatefulWidget {
   final id;
   final myId;
   final name;
-
   PersonChatSreen({super.key, this.id, this.myId, this.name});
 
   @override
@@ -56,12 +54,13 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
     }
   }
 
-  _launchURL({String? url}) async {
-    url = url; // you can use your url
-    if (await canLaunch(url!)) {
-      await launch(url);
-    } else {
-      throw 'Unable to open url : $url';
+  Future<void> _launchInWebView(String url) async {
+    Uri uri = Uri.parse(url);
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $uri');
     }
   }
 
@@ -231,9 +230,8 @@ class _PersonChatSreenState extends State<PersonChatSreen> {
       } else {
         return GestureDetector(
             onTap: () {
-              _launchURL(
-                url:
-                    "https://portaltest.thebrandwings.com//upload/attachment/$imgUrl",
+              _launchInWebView(
+                "https://portaltest.thebrandwings.com//upload/attachment/$imgUrl",
               );
             },
             child: const Icon(Icons.insert_drive_file, size: 50));
