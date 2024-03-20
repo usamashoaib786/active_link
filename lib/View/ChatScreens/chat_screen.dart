@@ -161,9 +161,11 @@ class _ChatScreenState extends State<ChatScreen> {
             Container(
               width: 50,
               height: 50,
-              decoration: const ShapeDecoration(
+              decoration: ShapeDecoration(
                 image: DecorationImage(
-                  image: NetworkImage("https://via.placeholder.com/50x50"),
+                  image: NetworkImage(data["image"] == ""
+                      ? "https://via.placeholder.com/50x50"
+                      : "https://portaltest.thebrandwings.com/${data["upload_path"]}/${data["image"]}"),
                   fit: BoxFit.fill,
                 ),
                 shape: OvalBorder(),

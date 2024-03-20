@@ -84,7 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
     dio = AppDio(context);
     logger.init();
     homePageApi();
-    _startTimer();
     super.initState();
   }
 
@@ -92,12 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     _timer.cancel();
     super.dispose();
-  }
-
-  void _startTimer() {
-    const duration = Duration(
-        minutes: 30 ); // Change the duration according to your requirement
-    _timer = Timer.periodic(duration, (Timer t) => homePageApi());
   }
 
   @override
@@ -121,97 +114,103 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Stack(
         children: [
-          ListView.builder(
-            itemCount: 7,
-            itemBuilder: (context, index) {
-              return Padding(
-                  padding: const EdgeInsets.only(
-                      left: 20.0, right: 20, top: 15, bottom: 15),
-                  child: GestureDetector(
-                    onTap: () {
-                      index == 0
-                          ? push(context, const TaskList())
-                          : index == 1
-                              ? push(context, const CompletedTaskScreen())
-                              : index == 2
-                                  ? push(context, const ShiftListScreen())
-                                  : index == 3
-                                      ? push(
-                                          context, const CompletedShiftList())
-                                      : index == 4
-                                          ? push(
-                                              context, const BehaviourLogList())
-                                          : index == 5
-                                              ? push(context,
-                                                  const LeaveListScreen())
-                                              : index == 6
-                                                  ? push(context,
-                                                      const ProgressLogList())
-                                                  : Null;
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      elevation: 10,
-                      child: Container(
-                        width: 350,
-                        height: 127,
-                        decoration: ShapeDecoration(
-                          gradient: LinearGradient(
-                              begin: const Alignment(0.00, -1.00),
-                              end: const Alignment(0, 1),
-                              colors: gradients[index]),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+          RefreshIndicator(
+            onRefresh: () async {
+              homePageApi();
+            },
+            child: ListView.builder(
+              itemCount: 7,
+              itemBuilder: (context, index) {
+                return Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20.0, right: 20, top: 15, bottom: 15),
+                    child: GestureDetector(
+                      onTap: () {
+                        index == 0
+                            ? push(context, const TaskList())
+                            : index == 1
+                                ? push(context, const CompletedTaskScreen())
+                                : index == 2
+                                    ? push(context, const ShiftListScreen())
+                                    : index == 3
+                                        ? push(
+                                            context, const CompletedShiftList())
+                                        : index == 4
+                                            ? push(context,
+                                                const BehaviourLogList())
+                                            : index == 5
+                                                ? push(context,
+                                                    const LeaveListScreen())
+                                                : index == 6
+                                                    ? push(context,
+                                                        const ProgressLogList())
+                                                    : Null;
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        elevation: 10,
+                        child: Container(
+                          width: 350,
+                          height: 127,
+                          decoration: ShapeDecoration(
+                            gradient: LinearGradient(
+                                begin: const Alignment(0.00, -1.00),
+                                end: const Alignment(0, 1),
+                                colors: gradients[index]),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage("${img[index]}"))),
-                              ),
-                              const SizedBox(
-                                width: 30,
-                              ),
-                              AppText.appText("${txt[index]}",
-                                  textColor: AppTheme.whiteColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400),
-                              const Spacer(),
-                              finalResponse == null
-                                  ? const Text("")
-                                  : AppText.appText(
-                                      index == 0
-                                          ? "${finalResponse["taskcount"]}"
-                                          : index == 1
-                                              ? "${finalResponse["completedtaskcount"]}"
-                                              : index == 2
-                                                  ? "${finalResponse["shiftcount"]}"
-                                                  : index == 3
-                                                      ? "${finalResponse["completedshiftscount"]}"
-                                                      : index == 4
-                                                          ? "${finalResponse["behaviourcount"]}"
-                                                          : index == 5
-                                                              ? "${finalResponse["leavecount"]}"
-                                                              : index == 6
-                                                                  ? "${finalResponse["progresscount"]}"
-                                                                  : "",
-                                      textColor: AppTheme.whiteColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)
-                            ],
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: AssetImage("${img[index]}"))),
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                AppText.appText("${txt[index]}",
+                                    textColor: AppTheme.whiteColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400),
+                                const Spacer(),
+                                finalResponse == null
+                                    ? const Text("")
+                                    : AppText.appText(
+                                        index == 0
+                                            ? "${finalResponse["taskcount"]}"
+                                            : index == 1
+                                                ? "${finalResponse["completedtaskcount"]}"
+                                                : index == 2
+                                                    ? "${finalResponse["shiftcount"]}"
+                                                    : index == 3
+                                                        ? "${finalResponse["completedshiftscount"]}"
+                                                        : index == 4
+                                                            ? "${finalResponse["behaviourcount"]}"
+                                                            : index == 5
+                                                                ? "${finalResponse["leavecount"]}"
+                                                                : index == 6
+                                                                    ? "${finalResponse["progresscount"]}"
+                                                                    : "",
+                                        textColor: AppTheme.whiteColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ));
-            },
+                    ));
+              },
+            ),
           ),
         ],
       ),

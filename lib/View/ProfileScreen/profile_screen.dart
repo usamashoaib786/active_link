@@ -46,6 +46,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _genderController.dispose();
+    _dobController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -366,7 +377,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     int responseCode404 = 404; // For For data not found
     int responseCode500 = 500; // Internal server error.
     String path = imagePath!.path; // Assuming _image is your image file
-
+    print("f4nf4o4ofno${finalResponse["user_details"]["upload_path"]}");
     FormData formData = FormData.fromMap({
       "full_name": _nameController.text,
       "password": _passwordController.text,
